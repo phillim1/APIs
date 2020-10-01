@@ -1,0 +1,1370 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "Provides methods for interacting with data on the core banking system and third-party vendors.",
+    "version": "1.1.1",
+    "title": "Account Information (US)",
+    "x-finastra-category": "Consumer Banking",
+    "x-finastra-subcategory": "Account Information",
+    "x-finastra-short-description": "Retrieve a list of accounts and transactions, obtain account and transaction images (e.g. Check Images or Deposit Images)",
+    "x-finastra-tags": [
+      "Malauzai",
+      "Account",
+      "North America"
+    ],
+    "x-finastra-channel-type": "B2B",
+    "x-finastra-maturity-level": "GA",
+    "x-finastra-audience": "PUBLIC",
+    "x-finastra-implementability": "RESTRICTED",
+    "x-finastra-icon": "Icons_11i.svg",
+    "x-finastra-pricing": "SILVER",
+    "x-finastra-data-classification": [
+      "Restricted"
+    ]
+  },
+  "host": "localhost:6800",
+  "basePath": "/v1",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json",
+    "application/octet-stream",
+    "application/x-www-form-urlencoded",
+    "multipart/form-data"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "securityDefinitions": {
+    "Oauth2": {
+      "type": "oauth2",
+      "description": "Oauth 2.0 authentication",
+      "tokenUrl": "https://any.local.keycloak:8443/login/v1/sandbox/auth",
+      "flow": "application",
+      "scopes": {}
+    }
+  },
+  "security": [
+    {
+      "Oauth2": []
+    }
+  ],
+  "paths": {
+    "/consumers/{consumerId}/accounts": {
+      "get": {
+        "tags": [
+          "Accounts"
+        ],
+        "summary": "Retrieve a Summary of Accounts for an Account Holder",
+        "operationId": "accounts",
+        "description": "This call returns a summary of all accounts owned by an account holder.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/X-Request-ID"
+          },
+          {
+            "$ref": "#/parameters/ConsumerId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - Account Summary Returned",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Account"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalServerError"
+          }
+        },
+        "x-finastra-data-classification": [
+          "Restricted"
+        ]
+      }
+    },
+    "/consumers/{consumerId}/accounts/extended": {
+      "get": {
+        "tags": [
+          "Accounts"
+        ],
+        "summary": "Retrieve Extended Account Information",
+        "operationId": "extendedAccounts",
+        "description": "This call returns extended account information for all accounts owned by the account holder.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/X-Request-ID"
+          },
+          {
+            "$ref": "#/parameters/ConsumerId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - Account Details Returned",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ExtendedAccount"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalServerError"
+          }
+        },
+        "x-finastra-data-classification": [
+          "Restricted"
+        ]
+      }
+    },
+    "/consumers/{consumerId}/accounts/extendedWithDetails": {
+      "get": {
+        "tags": [
+          "Accounts"
+        ],
+        "summary": "Retrieve Extended and Detailed Information for All Accounts",
+        "operationId": "extendedAccountsWithDetails",
+        "description": "This call returns extended and detailed account information for all accounts owned by the account holder.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/X-Request-ID"
+          },
+          {
+            "$ref": "#/parameters/ConsumerId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - Account Details Returned",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/ExtendedAccountWithDetails"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalServerError"
+          }
+        },
+        "x-finastra-data-classification": [
+          "Restricted"
+        ]
+      }
+    },
+    "/consumers/{consumerId}/account-order": {
+      "get": {
+        "tags": [
+          "Consumer Profile"
+        ],
+        "summary": "Retrieve the Personalized Account Order",
+        "operationId": "accountOrder",
+        "description": "This call retrieves the personalized account order for the account holder",
+        "parameters": [
+          {
+            "$ref": "#/parameters/X-Request-ID"
+          },
+          {
+            "$ref": "#/parameters/ConsumerId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of accounts IDs in personalized order",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalServerError"
+          }
+        },
+        "x-finastra-data-classification": [
+          "Restricted"
+        ]
+      }
+    },
+    "/consumers/{consumerId}/accounts/{accountId}": {
+      "get": {
+        "tags": [
+          "Accounts"
+        ],
+        "summary": "Retrieve Extended and Detailed Information for an Account",
+        "operationId": "extendedAccountDetail",
+        "description": "This call returns extended and detailed information for the selected account.\n",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/X-Request-ID"
+          },
+          {
+            "$ref": "#/parameters/ConsumerId"
+          },
+          {
+            "name": "accountId",
+            "in": "path",
+            "description": "Passes a unique ID that identifies an account.",
+            "required": true,
+            "type": "string",
+            "x-finastra-data-classification": [
+              "Restricted"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - Account Details Returned",
+            "schema": {
+              "$ref": "#/definitions/ExtendedAccountWithDetails"
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalServerError"
+          }
+        },
+        "x-finastra-data-classification": [
+          "Restricted"
+        ]
+      }
+    },
+    "/consumers/{consumerId}/accounts/{accountId}/details": {
+      "get": {
+        "tags": [
+          "Accounts"
+        ],
+        "summary": "Retrieve Detailed Information for an Account",
+        "operationId": "accountDetail",
+        "description": "This call returns account details for the specified account ID.\n",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/X-Request-ID"
+          },
+          {
+            "$ref": "#/parameters/ConsumerId"
+          },
+          {
+            "name": "accountId",
+            "in": "path",
+            "description": "Passes a unique ID that identifies an account.",
+            "required": true,
+            "type": "string",
+            "x-finastra-data-classification": [
+              "Restricted"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - Account Details Returned",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Details"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalServerError"
+          }
+        },
+        "x-finastra-data-classification": [
+          "Restricted"
+        ]
+      }
+    },
+    "/consumers/{consumerId}/accounts/{accountId}/balances": {
+      "get": {
+        "tags": [
+          "Accounts"
+        ],
+        "summary": "Retrieve the Balance for an Account",
+        "operationId": "accountBalances",
+        "description": "This call returns the account balance of the specified account ID.\n",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/X-Request-ID"
+          },
+          {
+            "$ref": "#/parameters/ConsumerId"
+          },
+          {
+            "name": "accountId",
+            "in": "path",
+            "description": "Passes a unique ID that identifies an account.",
+            "required": true,
+            "type": "string",
+            "x-finastra-data-classification": [
+              "Restricted"
+            ]
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - Account Balance Returned",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/AccountBalance"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalServerError"
+          }
+        },
+        "x-finastra-data-classification": [
+          "Restricted"
+        ]
+      }
+    },
+    "/consumers/{consumerId}/accounts/{accountId}/transactions": {
+      "get": {
+        "tags": [
+          "Account Transactions"
+        ],
+        "summary": "Search for Account Transactions",
+        "operationId": "transactions",
+        "description": "This call searches for an account and returns all of the transactions based on the selected filter options.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/X-Request-ID"
+          },
+          {
+            "$ref": "#/parameters/ConsumerId"
+          },
+          {
+            "name": "accountId",
+            "in": "path",
+            "description": "Passes a unique ID that identifies an account.",
+            "required": true,
+            "type": "string",
+            "x-finastra-data-classification": [
+              "Restricted"
+            ]
+          },
+          {
+            "in": "query",
+            "name": "startDate",
+            "description": "Filters the start of the date range to retrieve transactions. (YYYY-MM-DD)",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "description": "Filters the end of the date range to retrieve transactions. (YYYY-MM-DD)",
+            "type": "string"
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "description": "Defines the number of records to skip for pagination.",
+            "type": "integer",
+            "format": "int32",
+            "default": 0
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "description": "Limits the maximum number of records to return.",
+            "type": "integer",
+            "format": "int32",
+            "default": 100
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - Transaction List Returned",
+            "schema": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Transaction"
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalServerError"
+          }
+        },
+        "x-finastra-data-classification": [
+          "Restricted"
+        ]
+      }
+    },
+    "/consumers/{consumerId}/accounts/{accountId}/transactions/{transactionId}": {
+      "get": {
+        "tags": [
+          "Account Transactions"
+        ],
+        "summary": "Retrieve Transaction Details",
+        "operationId": "transactionDetail",
+        "description": "This call returns details for the selected transaction.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/X-Request-ID"
+          },
+          {
+            "$ref": "#/parameters/ConsumerId"
+          },
+          {
+            "name": "accountId",
+            "in": "path",
+            "description": "Passes a unique ID that identifies an account.",
+            "required": true,
+            "type": "string",
+            "x-finastra-data-classification": [
+              "Restricted"
+            ]
+          },
+          {
+            "name": "transactionId",
+            "in": "path",
+            "description": "Passes a unique ID that identifies a transaction.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - Transaction Details Returned",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "details": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/definitions/Details"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalServerError"
+          }
+        },
+        "x-finastra-data-classification": [
+          "Restricted"
+        ]
+      }
+    },
+    "/consumers/{consumerId}/accounts/{accountId}/transactions/{transactionId}/transactionImage": {
+      "get": {
+        "tags": [
+          "Account Transactions"
+        ],
+        "summary": "Retrieve Saved Image for a Transaction",
+        "operationId": "transactionImage",
+        "description": "This call returns the image attached to a transaction by the account holder.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/X-Request-ID"
+          },
+          {
+            "$ref": "#/parameters/ConsumerId"
+          },
+          {
+            "name": "accountId",
+            "in": "path",
+            "description": "Passes a unique ID that identifies an account.",
+            "required": true,
+            "type": "string",
+            "x-finastra-data-classification": [
+              "Restricted"
+            ]
+          },
+          {
+            "name": "transactionId",
+            "in": "path",
+            "description": "Passes a unique ID that identifies a transaction.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - Image Returned",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "imageName": {
+                  "description": "Returns the saved file name for an image.",
+                  "type": "string"
+                },
+                "imageData": {
+                  "description": "Defines the base64-encoded image data.",
+                  "type": "string",
+                  "format": "byte"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalServerError"
+          }
+        },
+        "x-finastra-data-classification": [
+          "Restricted"
+        ]
+      }
+    },
+    "/consumers/{consumerId}/accounts/{accountId}/transactions/{transactionId}/checkImage": {
+      "get": {
+        "tags": [
+          "Account Transactions"
+        ],
+        "summary": "Retrieve Check Image for a Transaction",
+        "operationId": "checkImage",
+        "description": "This call returns the check image for the selected transaction.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "$ref": "#/parameters/X-Request-ID"
+          },
+          {
+            "$ref": "#/parameters/ConsumerId"
+          },
+          {
+            "name": "accountId",
+            "in": "path",
+            "description": "Passes a unique ID that identifies an account.",
+            "required": true,
+            "type": "string",
+            "x-finastra-data-classification": [
+              "Restricted"
+            ]
+          },
+          {
+            "name": "transactionId",
+            "in": "path",
+            "description": "Passes a unique ID that identifies a transaction.",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success - Check Image Returned",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "front": {
+                  "description": "Returns the front of the check image (base64 encoded).",
+                  "type": "string",
+                  "format": "byte"
+                },
+                "back": {
+                  "description": "Returns the back of the check image (base64 encoded).",
+                  "type": "string",
+                  "format": "byte"
+                }
+              },
+              "x-finastra-data-classification": [
+                "Restricted"
+              ]
+            }
+          },
+          "400": {
+            "$ref": "#/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/responses/InternalServerError"
+          }
+        },
+        "x-finastra-data-classification": [
+          "Restricted"
+        ]
+      }
+    }
+  },
+  "parameters": {
+    "X-Request-ID": {
+      "name": "X-Request-ID",
+      "in": "header",
+      "description": "Passes a unique ID defined by the requestor. When a call is sent with the same request ID, the original response is returned without running the call again. This ID may also be used for logging or troubleshooting.",
+      "type": "string"
+    },
+    "ConsumerId": {
+      "name": "consumerId",
+      "in": "path",
+      "description": "Passes a unique ID that identifies an account holder.",
+      "required": true,
+      "type": "string",
+      "x-finastra-data-classification": [
+        "Restricted"
+      ]
+    }
+  },
+  "definitions": {
+    "GeneralResponse": {
+      "description": "Defines a response for requests.",
+      "title": "GeneralResponse",
+      "type": "object",
+      "required": [
+        "message"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "description": "Returns a unique code that identifies the message generated."
+        },
+        "message": {
+          "type": "string",
+          "description": "Returns a message from the system that is used to troubleshoot failed requests."
+        }
+      }
+    },
+    "Address": {
+      "description": "Defines an address.",
+      "title": "Address",
+      "required": [
+        "streetLine_1",
+        "city",
+        "state",
+        "postalCode",
+        "addressType"
+      ],
+      "type": "object",
+      "properties": {
+        "streetLine_1": {
+          "type": "string",
+          "description": "Defines line 1 of the street address.",
+          "x-finastra-data-classification": [
+            "Restricted"
+          ]
+        },
+        "streetLine_2": {
+          "type": "string",
+          "description": "Defines line 2 of the street address.",
+          "x-finastra-data-classification": [
+            "Restricted"
+          ]
+        },
+        "streetLine_3": {
+          "type": "string",
+          "description": "Defines line 3 of the street address.",
+          "x-finastra-data-classification": [
+            "Restricted"
+          ]
+        },
+        "city": {
+          "type": "string",
+          "description": "Defines the city address.",
+          "x-finastra-data-classification": [
+            "Restricted"
+          ]
+        },
+        "state": {
+          "type": "string",
+          "description": "Defines the state address.",
+          "x-finastra-data-classification": [
+            "Restricted"
+          ]
+        },
+        "country": {
+          "type": "string",
+          "description": "Defines the country address.",
+          "x-finastra-data-classification": [
+            "Restricted"
+          ]
+        },
+        "province": {
+          "type": "string",
+          "description": "Defines the province address.",
+          "x-finastra-data-classification": [
+            "Restricted"
+          ]
+        },
+        "postalCode": {
+          "type": "string",
+          "description": "Defines the postal code of the address.",
+          "x-finastra-data-classification": [
+            "Restricted"
+          ]
+        },
+        "postalCodeExtension": {
+          "type": "string",
+          "description": "Defines the four digit postal add-on code.",
+          "x-finastra-data-classification": [
+            "Restricted"
+          ]
+        },
+        "addressType": {
+          "type": "string",
+          "description": "Defines the address type.",
+          "enum": [
+            "physical",
+            "mailing"
+          ]
+        }
+      }
+    },
+    "Email": {
+      "description": "Defines an email address and type.",
+      "title": "Email",
+      "type": "object",
+      "required": [
+        "address",
+        "emailType"
+      ],
+      "properties": {
+        "address": {
+          "type": "string",
+          "description": "Defines the email address.",
+          "x-finastra-data-classification": [
+            "Restricted"
+          ]
+        },
+        "emailType": {
+          "type": "string",
+          "description": "Defines the email address type.",
+          "enum": [
+            "primary",
+            "alternate"
+          ]
+        }
+      }
+    },
+    "Account": {
+      "description": "Defines an account.",
+      "title": "Account",
+      "type": "object",
+      "required": [
+        "accountId",
+        "formattedAccountNumber"
+      ],
+      "properties": {
+        "accountId": {
+          "type": "string",
+          "example": "112",
+          "description": "Defines a unique ID that identifies an account.",
+          "x-finastra-data-classification": [
+            "Restricted"
+          ]
+        },
+        "formattedAccountNumber": {
+          "type": "string",
+          "description": "Defines the formatted account number from the core system.",
+          "x-finastra-data-classification": [
+            "Restricted"
+          ]
+        },
+        "accountType": {
+          "type": "string",
+          "description": "Defines the account type.",
+          "enum": [
+            "CHK",
+            "SAV",
+            "MM",
+            "CD",
+            "CARD",
+            "LOC",
+            "LOAN",
+            "NONE"
+          ]
+        },
+        "nickname": {
+          "type": "string",
+          "description": "Defines the account nickname.",
+          "x-finastra-data-classification": [
+            "Restricted"
+          ]
+        }
+      }
+    },
+    "AccountWithBalances": {
+      "description": "Defines an account including balances on the account.",
+      "title": "AccountWithBalances",
+      "allOf": [
+        {
+          "$ref": "#/definitions/Account"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "balances": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/AccountBalance"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "AccountBalance": {
+      "description": "Defines an account balance.",
+      "title": "AccountBalance",
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "description": "Defines the account balance type.",
+          "enum": [
+            "current",
+            "available"
+          ]
+        },
+        "amount": {
+          "type": "number",
+          "description": "Defines the account balance amount.",
+          "format": "float"
+        }
+      }
+    },
+    "ExtendedAccount": {
+      "description": "Defines extended account information.",
+      "title": "ExtendedAccount",
+      "allOf": [
+        {
+          "$ref": "#/definitions/AccountWithBalances"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "accountNumber": {
+              "type": "string",
+              "description": "Defines the account number.",
+              "x-finastra-data-classification": [
+                "Restricted"
+              ]
+            },
+            "alternateAccountNumber": {
+              "type": "string",
+              "description": "Account number provided in an alternate format, if available.",
+              "x-finastra-data-classification": [
+                "Restricted"
+              ]
+            },
+            "coreComponents": {
+              "type": "object",
+              "description": "Defines the core components.",
+              "properties": {
+                "number": {
+                  "type": "string",
+                  "description": "Defines the number."
+                },
+                "type": {
+                  "type": "string",
+                  "description": "Defines the type."
+                },
+                "subtype": {
+                  "type": "string",
+                  "description": "Defines the subtype."
+                },
+                "suffix": {
+                  "type": "string",
+                  "description": "Defines the suffix."
+                }
+              },
+              "x-finastra-data-classification": [
+                "Restricted"
+              ]
+            },
+            "micr": {
+              "type": "string",
+              "description": "Defines the MICR number.",
+              "x-finastra-data-classification": [
+                "Restricted"
+              ]
+            },
+            "openDate": {
+              "type": "string",
+              "description": "Defines the account open date.",
+              "format": "date"
+            },
+            "privileges": {
+              "$ref": "#/definitions/AccountPrivileges"
+            },
+            "isAsset": {
+              "type": "boolean",
+              "description": "Indicates whether the account is an asset.",
+              "default": false
+            },
+            "isLiability": {
+              "type": "boolean",
+              "description": "Indicates whether the account is a liability.",
+              "default": false
+            },
+            "branchNumber": {
+              "type": "string",
+              "description": "Defines the branch number assigned to the account from the core system.",
+              "x-finastra-data-classification": [
+                "Restricted"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "ExtendedAccountWithDetails": {
+      "description": "Defines extended account information including details.",
+      "title": "ExtendedAccountWithDetails",
+      "allOf": [
+        {
+          "$ref": "#/definitions/ExtendedAccount"
+        },
+        {
+          "type": "object",
+          "properties": {
+            "details": {
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/Details"
+              }
+            },
+            "statementDeliveryOption": {
+              "type": "string",
+              "description": "Defines the method that is used to deliver statements, such as Print or Email."
+            },
+            "statementDeliveryEmail": {
+              "type": "array",
+              "description": "Defines the statement delivery email address.",
+              "items": {
+                "$ref": "#/definitions/Email"
+              }
+            },
+            "statementDeliveryEnrollmentTime": {
+              "type": "string",
+              "description": "Defines the enrolled in the statement delivery method."
+            },
+            "ownerName": {
+              "type": "string",
+              "description": "Defines the name of the primary owner for an account.",
+              "x-finastra-data-classification": [
+                "Restricted"
+              ]
+            },
+            "ownerAddress": {
+              "$ref": "#/definitions/Address"
+            }
+          }
+        }
+      ]
+    },
+    "Transaction": {
+      "description": "Defines an account transaction.",
+      "title": "Transaction",
+      "type": "object",
+      "required": [
+        "id",
+        "accountId"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Defines a unique ID that identifies a transaction."
+        },
+        "accountId": {
+          "type": "string",
+          "description": "Defines a unique ID that identifies an account.",
+          "x-finastra-data-classification": [
+            "Restricted"
+          ]
+        },
+        "transactionDate": {
+          "type": "string",
+          "format": "date",
+          "description": "Defines the transaction date.",
+          "example": "2016-08-29"
+        },
+        "transactionAmount": {
+          "type": "number",
+          "format": "float",
+          "description": "Defines the transaction amount.",
+          "example": 100
+        },
+        "runningBalance": {
+          "type": "number",
+          "format": "float",
+          "description": "Defines the running balance amount.",
+          "example": 1000
+        },
+        "pending": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the amount is pending.",
+          "example": false
+        },
+        "debit": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the amount is a debit.",
+          "example": true
+        },
+        "checkImage": {
+          "type": "string",
+          "description": "Defines the check image.",
+          "x-finastra-data-classification": [
+            "Restricted"
+          ]
+        },
+        "checkNumber": {
+          "type": "integer",
+          "description": "Defines the check number.",
+          "format": "int32"
+        },
+        "description": {
+          "type": "string",
+          "description": "Defines the transaction description."
+        },
+        "description2": {
+          "type": "string",
+          "description": "Defines the transaction description line 2."
+        },
+        "transactionCategory": {
+          "type": "string",
+          "description": "Defines the transaction category."
+        },
+        "markAttended": {
+          "type": "boolean",
+          "description": "Defines the mark attended flag for transaction.",
+          "default": false
+        }
+      }
+    },
+    "AccountPrivileges": {
+      "description": "Defines privileges on an account.",
+      "title": "AccountPrivileges",
+      "type": "object",
+      "properties": {
+        "internalTransferFromAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may send internal transfers with the account."
+        },
+        "internalTransferToAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may receive internal transfers with the account."
+        },
+        "rdcAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether Remote Deposit Capture (RDC) is enabled for the account."
+        },
+        "c2cSendAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may send customer-to-customer payments with the account."
+        },
+        "c2cReceiveAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may receive customer-to-customer payments with the account."
+        },
+        "p2pSendAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may send person-to-person payments with the account."
+        },
+        "p2pReceiveAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may receive person-to-person payments with the account."
+        },
+        "externalTransferSendAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may send external transfers with the account."
+        },
+        "externalTransferReceiveAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may receive external transfers with the account."
+        },
+        "loanTransferFromAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may transfer loan funds from the account."
+        },
+        "loanTransferToAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may transfer loan funds to the account."
+        },
+        "statementDeliveryAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may receive paper statements for the account."
+        },
+        "statementViewingAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may view statements for the account online."
+        },
+        "statementSSOAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may use Single Sign On (SSO) to access online statements for the account."
+        },
+        "stopPaymentAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may use stop payments are allowed for the account."
+        },
+        "textBankingFromAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may transfer funds from the account using text banking."
+        },
+        "textBankingToAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may transfer funds to the account using text banking."
+        },
+        "achAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may process ACH transactions for the account."
+        },
+        "wiresAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may process wire transactions for the account."
+        },
+        "billPayAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may use the account for bill pay."
+        },
+        "displayHistoryAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether displaying historical transactions is allowed for the account."
+        },
+        "displayBalanceAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether displaying balances is allowed for the account."
+        },
+        "alertsAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may set up alerts for the account."
+        },
+        "transferCrossEntityAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may set up cross entity transfers for the account."
+        },
+        "billPaySSOAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may use Single Sign On (SSO) to access Bill Pay for the account."
+        },
+        "checkStatusAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may view check status for the account."
+        },
+        "checkWithdrawalAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may process check withdrawals for the account."
+        },
+        "orderChecksAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may order checks for the account."
+        },
+        "picturePayAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may use Picture Pay for the account."
+        },
+        "balanceVerificationRequired": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether balance verification is required for the account."
+        },
+        "sweepTransfersAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether SWEEP transfers are allowed for the account."
+        },
+        "federalTaxPaymentsAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether federal tax payments are allowed for the account."
+        },
+        "rdcSsoAllowed": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates whether the account holder may use Single Sign On (SSO) to access Remote Deposit Capture (RDC) for the account."
+        }
+      }
+    },
+    "Details": {
+      "description": "Defines a label and value for a detail item.",
+      "title": "Details",
+      "type": "object",
+      "properties": {
+        "value": {
+          "type": "string",
+          "description": "Defines the value of the detail item."
+        },
+        "label": {
+          "type": "string",
+          "description": "Defines the label of the detail item."
+        }
+      }
+    }
+  },
+  "responses": {
+    "NotFound": {
+      "description": "The specified resource was not found",
+      "schema": {
+        "$ref": "#/definitions/GeneralResponse"
+      }
+    },
+    "BadRequest": {
+      "description": "Bad Request",
+      "schema": {
+        "$ref": "#/definitions/GeneralResponse"
+      }
+    },
+    "Unauthorized": {
+      "description": "Unauthorized",
+      "schema": {
+        "$ref": "#/definitions/GeneralResponse"
+      }
+    },
+    "InternalServerError": {
+      "description": "Internal Server Error",
+      "schema": {
+        "$ref": "#/definitions/GeneralResponse"
+      }
+    }
+  }
+}
