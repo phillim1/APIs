@@ -95,7 +95,8 @@
         },
         "x-finastra-data-classification": [
           "Restricted"
-        ]
+        ],
+        "security": []
       }
     },
     "/consumers/{consumerId}/accounts/extended": {
