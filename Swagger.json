@@ -189,7 +189,8 @@
         },
         "x-finastra-data-classification": [
           "Restricted"
-        ]
+        ],
+        "security": []
       }
     },
     "/consumers/{consumerId}/account-order": {
