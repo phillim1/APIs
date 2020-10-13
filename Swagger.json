@@ -486,7 +486,8 @@
         },
         "x-finastra-data-classification": [
           "Restricted"
-        ]
+        ],
+        "security": []
       }
     },
     "/consumers/{consumerId}/accounts/{accountId}/transactions/{transactionId}": {
