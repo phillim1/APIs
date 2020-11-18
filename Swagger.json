@@ -45,11 +45,7 @@
       "scopes": {}
     }
   },
-  "security": [
-    {
-      "Oauth2": []
-    }
-  ],
+  "security": [],
   "paths": {
     "/consumers/{consumerId}/accounts": {
       "get": {
