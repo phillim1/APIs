@@ -1,0 +1,3120 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Corporate Lending Alternative Reference Rates",
+    "x-finastra-category": "Corporate Banking",
+    "x-finastra-audience": "PUBLIC",
+    "x-finastra-implementability": "INTERNAL",
+    "x-finastra-channel-type": "SERVICE",
+    "x-finastra-maturity-level": "GA",
+    "x-finastra-subcategory": "Corporate and Syndicated Lending",
+    "x-finastra-short-description": "Provides an Alternative Reference Rates (ARR) Calculator Service to applications that are unable to calculate their own ARR based interest accruals",
+    "x-finastra-icon": "Icons_16h.svg",
+    "x-finastra-business-guides": {
+      "title": "Corporate Lending Alternative Reference Rates",
+      "url": "/documentation/business-guides/guide-arr"
+    },
+    "x-finastra-tags": [
+      "Fusion Loan IQ"
+    ],
+    "description": "Set of Alternative Reference Rates (ARR) Calculator APIs enabling calculation of key ARR rates and corresponding accrued interest amounts, using various ARR Calculation methods for a given interest period and given ARR Conventions, based on the published ARR rates or Compounded ARR Index.",
+    "version": "1.3.2"
+  },
+  "paths": {
+    "/daily-compounding/rates": {
+      "get": {
+        "tags": [
+          "Daily Compounding in Arrears"
+        ],
+        "summary": "Calculated Rate - Using Daily Compounded in Arrears (NCCR)",
+        "description": "Calculates the ARR rates based on Daily Compounding in Arrears (Non-Cumulative Compounded Rate) for the provided start/end dates (such as interest period dates) and other ARR parameters, by leveraging the daily published risk-free reference rate.",
+        "operationId": "get-daily-compounding-rates",
+        "parameters": [
+          {
+            "name": "interestPeriodStartDate",
+            "in": "query",
+            "description": "The start date of the interest period from (and including) which the ARR Compounding Calculation should be performed.</br>The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "interestPeriodEndDate",
+            "in": "query",
+            "description": "The end date of the interest period to (and including) which the ARR compounding calculation should be performed.</BR> The date is in ISO 8601 Date Format yyyy-mm-dd.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "riskFreeRate",
+            "in": "query",
+            "description": "The name of the Risk Free Rate/Alternative Reference Rate.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "SOFR",
+                "SONIA"
+              ]
+            }
+          },
+          {
+            "name": "riskFreeRateFloor",
+            "in": "query",
+            "description": "The Floor value (as a percentage) for the published risk-free reference rate. Accepts upto 6 decimal points.</br> Minimum Value = -100, Maximum Value = 100",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "lookBackDays",
+            "in": "query",
+            "description": "Lookback days refers to the fixed date (business days prior to) from which the calculator is expected to use the published Risk Free Rate/Alternative Reference Rate </BR>Minimum Value = 0, Maximum Value = 99",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "observationPeriodShift",
+            "in": "query",
+            "description": "Indicates whether Observation Period Shift is applicable or not. Not supported if lockout days is non zero or interest period start/end date are non-business day.",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "rateRoundingDecimalPoints",
+            "in": "query",
+            "description": "Rounds the calculated ARR Compounded Rate and Compounding Factor to the specified decimal precision.</BR>Minimum Value = 2, Maximum Value = 12 </br>Default value: for SOFR = 5, for SONIA = 4",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "dayCountConvention",
+            "in": "query",
+            "description": "The Day Count Conventions supported. Valid value are - ACT/360, ACT/365 & ACT/ACT.</br> Default Value: for SOFR= ACT/360, for SONIA = ACT/365 ",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 8
+            }
+          },
+          {
+            "name": "lockoutDays",
+            "in": "query",
+            "description": "Lockout days refers to the period (business days) in which the applicable ARR is derived using Lookback days and applied to all the days defined as Lockout days</BR> Minimum Value = 0, Maximum Value = 99",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "showDailyDetails",
+            "in": "query",
+            "description": "Indicates whether the Calculated Compounded Rates in the output appear for all business days (Value = True) OR only for the calculateTillDate or last business day for the interest period (Value = False), based on whether calculateTillDate is outside the rates-known window or not, respectively.",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "calculateTillDate",
+            "in": "query",
+            "description": "The Date upto (and including) which the calculated compounded rates are expected in the output. The date is in ISO 8601 Date Format yyyy-mm-dd.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DailyCompoundedRate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input provided or bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred, please try after sometime.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/compounded-in-arrears/average-rate": {
+      "get": {
+        "tags": [
+          "Average Compounded in Arrears"
+        ],
+        "summary": "Calculated Rate - Using Average Compounded in Arrears",
+        "description": "Calculates the ARR rate based on Average Compounded in Arrears for the provided start/end dates (such as interest period dates) and other ARR parameters, by leveraging the daily published risk-free reference rate into legacy lending systems to perform conventional interest accrual calculations.",
+        "operationId": "get-compounded-in-arrears-average-rate",
+        "parameters": [
+          {
+            "name": "interestPeriodStartDate",
+            "in": "query",
+            "description": "The start date of the interest period from (and including) which the ARR Compounding Calculation should be performed.</br>The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "interestPeriodEndDate",
+            "in": "query",
+            "description": "The end date of the interest period to (and including) which the ARR compounding calculation should be performed.</BR> The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "riskFreeRate",
+            "in": "query",
+            "description": "The name of the Risk Free Rate/Alternative Reference Rate.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "SOFR",
+                "SONIA"
+              ]
+            }
+          },
+          {
+            "name": "riskFreeRateFloor",
+            "in": "query",
+            "description": "The Floor value (as a percentage) for the published risk-free reference rate. Accepts upto 6 decimal points. Minimum Value = -100, Maximum Value = 100.",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "lookBackDays",
+            "in": "query",
+            "description": "Lookback days refers to the fixed date (business days prior to) from which the calculator is expected to use the published Risk Free Rate/Alternative Reference Rate </BR>Minimum Value = 0, Maximum Value = 99",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "observationPeriodShift",
+            "in": "query",
+            "description": "Indicates whether Observation Period Shift is applicable or not. Not supported if lockout days is non zero or interest period start/end date are non-business day.",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "rateRoundingDecimalPoints",
+            "in": "query",
+            "description": "Rounds the calculated ARR Compounded Rate and Compounding Factor to the specified decimal precision.</BR>Minimum Value = 2, Maximum Value = 12 </br>Default value: for SOFR = 5, for SONIA = 4",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "dayCountConvention",
+            "in": "query",
+            "description": "The Day Count Conventions supported. Valid value are - ACT/360, ACT/365 & ACT/ACT.</br> Default Value: for SOFR= ACT/360, for SONIA = ACT/365 ",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 8
+            }
+          },
+          {
+            "name": "lockoutDays",
+            "in": "query",
+            "description": "Lockout days refers to the period (business days) in which the applicable ARR is derived using Lookback days and applied to all the days defined as Lockout days</BR> Minimum Value = 0, Maximum Value = 99",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "showDailyDetails",
+            "in": "query",
+            "description": "Indicates whether the Calculated Compounded Rates in the output appear for all business days (Value = True) OR only for the calculateTillDate or last business day for the interest period (Value = False), based on whether calculateTillDate is outside the rates-known window or not, respectively.",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "calculateTillDate",
+            "in": "query",
+            "description": "The Date upto (and including) which the calculated compounded rates are expected in the output. The date is in ISO 8601 Date Format yyyy-mm-dd.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AverageCompoundedRate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input provided or bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred, please try after sometime.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/compounded-in-arrears/interest": {
+      "post": {
+        "tags": [
+          "Average Compounded in Arrears"
+        ],
+        "summary": "Interest Calculator - Using Average Compounded in Arrears",
+        "description": "Calculates the ARR rate based on Average Compounded in Arrears and accrued interest amounts for the provided loan parameters such as interest period dates, loan balance amount, and so on, and other ARR parameters, using the daily published risk-free reference rate.",
+        "operationId": "post-compounded-in-arrears-interest",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Idempotency Key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterestCalculatorCriteria"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Request successful method",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterestCompoundingArrears"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input provided or bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred, please try after sometime.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/daily-compounding/interest": {
+      "post": {
+        "tags": [
+          "Daily Compounding in Arrears"
+        ],
+        "summary": "Interest Calculator - Using Daily Compounding in Arrears (NCCR)",
+        "description": "Calculates the ARR rate based on Daily Compounding in Arrears (Non-Cumulative Compounded Rate) and accrued interest amounts for the provided loan parameters such as interest period dates, loan balance amount, and so on, and other ARR parameters, using the daily published risk-free reference rate.",
+        "operationId": "post-daily-compounding-interest",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Idempotency Key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterestCalculatorCriteria"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterestDailyCompounded"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input provided or bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred, please try after sometime.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/compounded-in-arrears/arr-index/average-rate": {
+      "get": {
+        "tags": [
+          "Average Compounded in Arrears"
+        ],
+        "summary": "Calculated Rate Based on ARR Index",
+        "description": "Calculates the Average Compounded in Arrears Rate for the provided index start/end dates by leveraging the daily published SOFR Index",
+        "operationId": "get-compounded-in-arrears-arr-index-average-rate",
+        "parameters": [
+          {
+            "name": "indexStartDate",
+            "in": "query",
+            "description": "The Value/Publication Date of the ARR Index corresponding to the start of the interest period. The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "indexEndDate",
+            "in": "query",
+            "description": "The Value/Publication Date of the ARR Index corresponding to one calendar day following the interest period end date.</br>Interest period end date corresponds to the date to (and including) which the ARR compounding calculation is performed.<br>The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "riskFreeRate",
+            "in": "query",
+            "description": "The name of the Risk Free Rate/Alternative Reference Rate.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "SOFR",
+                "SONIA"
+              ]
+            }
+          },
+          {
+            "name": "rateRoundingDecimalPoints",
+            "in": "query",
+            "description": "Rounds the calculated Average Compounded in Arrears Rate to the specified decimal precision.</BR>Minimum Value = 2, Maximum Value = 12 </br>Default value: for SOFR = 5",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AverageCompoundedRateIndex"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input provided or bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred, please try after sometime.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/compounded-in-arrears/tenors/average-rates": {
+      "get": {
+        "tags": [
+          "Average Compounded in Arrears"
+        ],
+        "summary": "Calculated Rates for Tenors",
+        "description": "Calculates the Average Compounded in Arrears rate for a set of tenors (7 days, 30 days, and so on) for the provided date and other ARR parameters, by leveraging the daily published risk-free reference rate. Wherever the published compounded averages are available for a specific tenor, the compounded average value is retrieved as is.",
+        "operationId": "get-compounded-in-arrears-tenors-average-rates",
+        "parameters": [
+          {
+            "name": "valueDate",
+            "in": "query",
+            "description": "The date corresponding to one calendar day following the interest period end date. For Compounding in Advance use cases, this date corresponds to the start of the interest period. </br>Interest period end date corresponds to the date to (and including) which the ARR compounding calculation is performed. Aligns with the definition of publication date of SOFR compounded averages by New York Federal Reserve.</br>The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "riskFreeRate",
+            "in": "query",
+            "description": "The name of the Risk Free Rate/Alternative Reference Rate.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "SOFR",
+                "SONIA"
+              ]
+            }
+          },
+          {
+            "name": "tenor",
+            "in": "query",
+            "description": "Tenor(s) for which the ARR Compounded Rates are needed. Each Tenor corresponds to an interest period starting (and including) exact number of calendar days in the Tenor before the Value Date, to (but excluding) the Value Date.</br>Available values : 7D, 30D, 60D, 90D, 180D, 360D </br>'D' denotes the number of calendar days</br>If no value is provided, then Compounded in Arrears Rates are displayed for all the 6 tenors in the output.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "rateRoundingDecimalPoints",
+            "in": "query",
+            "description": "Rounds the calculated Average Compounded in arrears Rate to the specified decimal precision.Not applicable to SOFR compounded averages for standard tenors(30D, 90D and 180D) published by New York Federal Reserve that are displayed in the output. </BR>Minimum Value = 2, Maximum Value = 12 </br>Default value: for SOFR = 5, for SONIA = 4",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenorResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input provided or bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred, please try after sometime.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simple-arr/rates": {
+      "get": {
+        "tags": [
+          "Simple ARR"
+        ],
+        "summary": "Simple ARR Rates",
+        "description": "Applies the Simple ARR method for the provided interest period start/end dates or an interim date in the interest period and other ARR parameters, by leveraging the daily published risk-free reference rate.",
+        "operationId": "get-simple-arr-rates",
+        "parameters": [
+          {
+            "name": "interestPeriodStartDate",
+            "in": "query",
+            "description": "The start date of the interest period. The date is in ISO 8601 Date Format yyyy-mm-dd.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "interestPeriodEndDate",
+            "in": "query",
+            "description": "The end date of the interest period to (and including) which the Simple ARR method is applied. The date is in ISO 8601 Date Format yyyy-mm-dd.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "riskFreeRate",
+            "in": "query",
+            "description": "The name of the Risk Free Rate/Alternative Reference Rate.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "SOFR",
+                "SONIA"
+              ]
+            }
+          },
+          {
+            "name": "riskFreeRateFloor",
+            "in": "query",
+            "description": "The Floor value (as a percentage) for the published risk-free reference rate. Accepts upto 6 decimal points. Minimum Value = -100, Maximum Value = 100.",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "lookBackDays",
+            "in": "query",
+            "description": "Lookback days refers to the fixed date (business days prior to) from which the calculator is expected to use the published Risk Free Rate/Alternative Reference Rate </BR>Minimum Value = 0, Maximum Value = 99",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "rateRoundingDecimalPoints",
+            "in": "query",
+            "description": "Rounds the rateApplied in the API output to the specified decimal precision. Minimum Value = 2, Maximum Value = 6.</br>Default value : for SOFR = 2, for SONIA = 4",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "dayCountConvention",
+            "in": "query",
+            "description": "The Day Count Conventions supported. Valid value are - ACT/360, ACT/365 & ACT/ACT.</br> Default Value: for SOFR= ACT/360, for SONIA = ACT/365 ",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 8
+            }
+          },
+          {
+            "name": "lockoutDays",
+            "in": "query",
+            "description": "Lockout days refers to the period (business days) in which the applicable ARR is derived using Lookback days and applied to all the days defined as Lockout days</BR> Minimum Value = 0, Maximum Value = 99",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "showDailyDetails",
+            "in": "query",
+            "description": "Indicates whether ARR Rates in the output appear for all business days (Value = True) OR only for the calculateTillDate or last business day for the interest period (Value = False), based on whether calculateTillDate is outside the rates-known window or not, respectively.",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "calculateTillDate",
+            "in": "query",
+            "description": "The Date upto (and including) which the ARR rates are expected in the output. The date is in ISO 8601 Date Format yyyy-mm-dd.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleARRRate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input provided or bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred, please try after sometime.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simple-arr/interest": {
+      "post": {
+        "tags": [
+          "Simple ARR"
+        ],
+        "summary": "Calculated Interest using Simple ARR Rates",
+        "description": "Applies the Simple ARR method and calculates the accrued interest amounts for the provided loan parameters such as interest period dates, loan balance amount, and so on, and other ARR parameters, using the daily published risk-free reference rate.",
+        "operationId": "post-simple-arr-interest",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Idempotency Key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SimpleARRInterestCalculatorCriteria"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Request successful method",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleARRInterestCompoundingArrears"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input provided or bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred, please try after sometime.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simple-average/rates": {
+      "get": {
+        "tags": [
+          "Simple Average"
+        ],
+        "summary": "Calculated Rate - Using Simple Average",
+        "description": "Calculates the ARR rate based on Simple Average for the provided start/end dates (such as interest period dates) and other ARR parameters, by leveraging the daily published risk-free reference rate into legacy lending systems to perform conventional interest accrual calculations.",
+        "operationId": "get-simple-average-rate",
+        "parameters": [
+          {
+            "name": "interestPeriodStartDate",
+            "in": "query",
+            "description": "The start date of the interest period from (and including) which the ARR Simple Average Calculation should be performed.</BR> The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "interestPeriodEndDate",
+            "in": "query",
+            "description": "The end date of the interest period to (and including) which the ARR Simple Average calculation should be performed.</BR> The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          },
+          {
+            "name": "riskFreeRate",
+            "in": "query",
+            "description": "The name of the Risk Free Rate/Alternative Reference Rate.",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "SOFR",
+                "SONIA"
+              ]
+            }
+          },
+          {
+            "name": "riskFreeRateFloor",
+            "in": "query",
+            "description": "The Floor value (as a percentage) for the published risk-free reference rate. Accepts upto 6 decimal points. Minimum Value = -100, Maximum Value = 100.",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "format": "double"
+            }
+          },
+          {
+            "name": "lookBackDays",
+            "in": "query",
+            "description": "Lookback days refers to the fixed date (business days prior to) from which the calculator is expected to use the published Risk Free Rate/Alternative Reference Rate </BR>Minimum Value = 0, Maximum Value = 99",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "observationPeriodShift",
+            "in": "query",
+            "description": "Indicates whether Observation Period Shift is applicable or not. Not supported if lockout days is non zero or interest period start/end date are non-business day.",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "rateRoundingDecimalPoints",
+            "in": "query",
+            "description": "Rounds the calculated ARR Simple Average Rate to the specified decimal precision.</BR> Minimum Value = 2, Maximum Value = 12 </br>Default value: for SOFR = 5, for SONIA = 4",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "dayCountConvention",
+            "in": "query",
+            "description": "The Day Count Conventions supported. Valid value are - ACT/360, ACT/365 & ACT/ACT.</br> Default Value: for SOFR= ACT/360, for SONIA = ACT/365 ",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "maxLength": 8
+            }
+          },
+          {
+            "name": "lockoutDays",
+            "in": "query",
+            "description": "Lockout days refers to the period (business days) in which the applicable ARR is derived using Lookback days and applied to all the days defined as Lockout days</BR> Minimum Value = 0, Maximum Value = 99",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 0
+            }
+          },
+          {
+            "name": "showDailyDetails",
+            "in": "query",
+            "description": "Indicates whether the Calculated Average Rates in the output appear for all business days (Value = True) OR only for the calculateTillDate or last business day for the interest period (Value = False), based on whether calculateTillDate is outside the rates-known window or not, respectively.",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "calculateTillDate",
+            "in": "query",
+            "description": "The Date upto (and including) which the calculated Simple Average rates are expected in the output. The date is in ISO 8601 Date Format yyyy-mm-dd.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "format": "date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Request successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SimpleAverageRate"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input provided or bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred, please try after sometime.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/simple-average/interest": {
+      "post": {
+        "tags": [
+          "Simple Average"
+        ],
+        "summary": "Interest Calculator - Using Simple Average",
+        "description": "Calculates the ARR rate based on Simple Average and accrued interest amounts for the provided loan parameters such as interest period dates, loan balance amount, and so on, and other ARR parameters, using the daily published risk-free reference rate.",
+        "operationId": "post-simple-average-interest",
+        "parameters": [
+          {
+            "name": "Idempotency-Key",
+            "in": "header",
+            "description": "Idempotency Key",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/InterestCalculatorCriteria"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Request successful method",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/InterestSimpleAverage"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input provided or bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Access token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Forbidden access.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Resource not found.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "An internal error occurred, please try after sometime.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ARRCalculatorErrorModel"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CalculatedDailyCompoundingRatesSummary": {
+        "title": "CalculatedDailyCompoundingRatesSummary",
+        "description": "Calculated Daily Compounding Rates Summary",
+        "type": "object",
+        "properties": {
+          "interestPeriodDate": {
+            "title": "Interest Period Date",
+            "type": "string",
+            "description": "The date in the interest period for which calculated ARR Compounded Rate is displayed in the output.</br>The date is in ISO 8601 Date Format yyyy-mm-dd.",
+            "format": "date"
+          },
+          "interestPeriodDays": {
+            "title": "Interest Period Days",
+            "type": "integer",
+            "description": "Number of days in the interest period (from and including the interestPeriodStartDate) for which the calculated Compounded Rate is applicable </br> type: integer($int32)",
+            "format": "int32",
+            "example": 1
+          },
+          "observationPeriodDate": {
+            "title": "Observation Period Date",
+            "type": "string",
+            "description": "The date in the observation period for which the published ARR rate (rateApplied) and the corresponding weightage of that rate is used for ARR Compounding calculation.</br>Populated only if the observationPeriodShift is true </br> Observation Period is defined as commencing 'x' number of business days (lookback days) prior to the start  (first day) of the interest period.</br>The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "observationPeriodDays": {
+            "title": "Observation Period Days",
+            "type": "integer",
+            "description": "Number of days in the observation period (from and including the start of Observation Period).</br>Populated only if the observationPeriodShift is true </br> type: integer($int32)",
+            "format": "int32",
+            "example": 1
+          },
+          "publishedRiskFreeRate": {
+            "title": "Published Risk Free rate",
+            "type": "number",
+            "format": "double",
+            "description": "The published ARR rate applied for the interestPeriodDate (if observationPeriodShift = false) or observationPeriodDate (if observationPeriodShift = true).",
+            "example": 1.04085026
+          },
+          "rateApplied": {
+            "title": "RateApplied",
+            "type": "number",
+            "format": "double",
+            "description": "The ARR Rate applied, after factoring in the riskFreeRateFloor value, for the interestPeriodDate. If the published risk-free rate is lower than the floor value, rateApplied = riskFreeRateFloor. Otherwise, rateApplied = publishedRiskFreeRate.",
+            "example": 1.04085026
+          },
+          "riskFreeRateFloorApplied": {
+            "title": "Risk Free Rate Floor Applied",
+            "type": "boolean",
+            "description": "Indicates whether the rateApplied has factored the riskFreeRateFloor value, for the interestPeriodDate (Value = true) or not (Value = false).",
+            "default": false
+          },
+          "compoundingFactor": {
+            "title": "Compounding factor",
+            "type": "number",
+            "format": "double",
+            "description": "Ratio of dailyCompoundedRate and the rateApplied, rounded to roundingDecimalPoints. </br>. (dot) is the only character supported for decimal place separator.",
+            "example": 0.04085026
+          },
+          "dailyCompoundedRate": {
+            "title": "Daily Compounded rate",
+            "type": "number",
+            "format": "double",
+            "description": "The calculated Daily Compounded Rate (Non Cumulative Compounded Rate), applicable for the interestPeriodDays, rounded to roundingDecimalPoints. </br> . (dot) is the only character supported for decimal place separator.",
+            "example": 1.04085026
+          }
+        }
+      },
+      "AbstractBaseRequestParameter": {
+        "title": "BaseRequestparameters",
+        "description": "Base Request parameters",
+        "required": [
+          "interestPeriodEndDate",
+          "interestPeriodStartDate",
+          "riskFreeRate"
+        ],
+        "type": "object",
+        "properties": {
+          "showDailyDetails": {
+            "title": "Show daily details",
+            "type": "boolean",
+            "description": "Indicates whether the Calculated Compounded Rates in the output appear for all business days (Value = true) or only for the last business day for the interest period (Value = false)",
+            "default": false
+          },
+          "interestPeriodStartDate": {
+            "title": "Interest Period Start Date",
+            "type": "string",
+            "description": "The start date of the interest period from (and including) which the ARR Compounding Calculation should be performed.</br>The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "interestPeriodEndDate": {
+            "title": "Interest Period End Date",
+            "type": "string",
+            "description": "The end date to (and including) which the ARR compounding calculation should be performed. This can correspond either to the interest accrual end date or in certain cases, any intermediate date in the interest period upto (and including) which the ARR Compounding Calculation is needed.</BR> The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "riskFreeRate": {
+            "title": "Risk free rate",
+            "type": "string",
+            "description": "The name of the Risk Free Rate/Alternative Reference Rate </br>Available values : SOFR, SONIA",
+            "enum": [
+              "SOFR",
+              "SONIA"
+            ]
+          },
+          "riskFreeRateFloor": {
+            "title": "Risk free rate Floor",
+            "type": "number",
+            "format": "double",
+            "description": "Risk free rate floor will be considered if the published risk free Rate is less than the risk free rate floor. It is a percentage and excepts upto 6 decimal points.",
+            "example": 0.002012
+          },
+          "lookBackDays": {
+            "title": "Look back days",
+            "maximum": 99,
+            "minimum": 0,
+            "type": "integer",
+            "description": "Lookback days refers to the fixed date (business days prior to) from which the calculator is expected to use the published Risk Free Rate/Alternative Reference Rate </BR>Minimum Value = 0, Maximum Value = 99",
+            "format": "int32",
+            "default": 0
+          },
+          "lockoutDays": {
+            "title": "Lock out days",
+            "maximum": 99,
+            "minimum": 0,
+            "type": "integer",
+            "description": "Lockout days refers to the period (business days) in which the applicable ARR is derived using Lookback days and applied to all the days defined as Lockout days</BR> Minimum Value = 0, Maximum Value = 99",
+            "format": "int32",
+            "default": 0
+          },
+          "observationPeriodShift": {
+            "title": "Observation period shift",
+            "type": "boolean",
+            "description": "Indicates whether Observation Period Shift is applicable or not. Not supported if lockout days is non zero or interest period start/end date are non-business day.</br>Default value : false",
+            "default": false
+          },
+          "rateRoundingDecimalPoints": {
+            "title": "Rounding decimal points",
+            "maximum": 12,
+            "minimum": 2,
+            "type": "integer",
+            "description": "Rounds the calculated ARR Compounded Rate and Compounding Factor to the specified decimal precision.</BR>Minimum Value = 2, Maximum Value = 12 </br>Default value: for SOFR = 5, for SONIA = 4",
+            "format": "int32",
+            "example": 8
+          },
+          "dayCountConvention": {
+            "title": "Day Count Convention",
+            "maxLength": 15,
+            "type": "string",
+            "description": "The Day Count Conventions supported. Valid value are - ACT/360, ACT/365 & ACT/ACT.</br> Default Value: for SOFR= ACT/360, for SONIA = ACT/365 ",
+            "example": "ACT/360"
+          },
+          "calculateTillDate": {
+            "title": "Calculate till Date",
+            "type": "string",
+            "description": "Date upto which the rates are calculated if cycle is not in the rates known window. The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          }
+        }
+      },
+      "RateRequestParameter": {
+        "title": "RateRequestParameter",
+        "type": "object",
+        "description": "Rate request parameters",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/AbstractBaseRequestParameter"
+          }
+        ]
+      },
+      "DailyCompoundedRate": {
+        "title": "DailyCompoundedRate",
+        "description": "If showDailyDetails = true, dailyRateSummary displays the averageCompoundedRate upto (and including)  calculateTillDate, if it is outside the Rate Known Window, or upto (and including) the interestPeriodEndDate otherwise.</br> If showDailyDetails = false, dailyRateSummary displays the averageCompoundedRate only for calculateTillDate, if it is outside the Rate Known Window, or only for the last business day for the interest period otherwise. ",
+        "type": "object",
+        "properties": {
+          "dailyRateSummary": {
+            "type": "array",
+            "description": "If showDailyDetails = true, dailyRateSummary displays the averageCompoundedRate upto (and including)  calculateTillDate, if it is outside the Rate Known Window, or upto (and including) the interestPeriodEndDate otherwise.</br> If showDailyDetails = false, dailyRateSummary displays the averageCompoundedRate only for calculateTillDate, if it is outside the Rate Known Window, or only for the last business day for the interest period otherwise. ",
+            "items": {
+              "$ref": "#/components/schemas/CalculatedDailyCompoundingRatesSummary"
+            }
+          },
+          "requestParameters": {
+            "$ref": "#/components/schemas/RateRequestParameter"
+          },
+          "comment": {
+            "title": "Comments",
+            "maxLength": 300,
+            "type": "string",
+            "description": "Captures additional narration for the calculations performed. Currently, it displays the time stamp when the calculation was completed. Format in ISO 8601 is \"Computed time : yyyy-MM-dd'T'HH:mm:ssXXX.\"",
+            "example": "Computed time : 2020-08-20T11:53:07+00:00. Computed time is the time stamp when the calculation was completed."
+          },
+          "lastUpdatedFromSource": {
+            "title": "LastUpdatedFromSource",
+            "type": "string",
+            "description": "The most recent timestamp when the published ARR rate data was consumed by the Calculator from the relevant source (e.g. NewYork Federal Reserve for SOFR)</br>Format in ISO 8601 is \"yyyy-MM-dd'T'HH:mm:ssXXX\"",
+            "format": "date-time",
+            "example": "2020-08-20T11:53:07+00:00"
+          },
+          "legalDisclaimer": {
+            "title": "Legal Disclaimer",
+            "maxLength": 2000,
+            "type": "string",
+            "description": "The End User Terms for using this Calculator",
+            "example": "Use subject to New York Fed Terms of Use for Select Rate Data.  New York Fed has no liability for your use.  Refer the following link for more details: https://www.newyorkfed.org/markets/reference-rates-terms-of-use"
+          }
+        }
+      },
+      "ARRCalculatorErrorModel": {
+        "title": "ARRCalculatorErrorModel",
+        "description": "ARR Calculator Error model",
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "maxLength": 50,
+            "description": "Error message",
+            "example": "startDate is greater then the endDate"
+          },
+          "type": {
+            "type": "string",
+            "maxLength": 100,
+            "description": "Error type",
+            "example": "https://api.finastra.com/validation-error"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 200,
+            "description": "Error description code",
+            "example": "STDT_GT_THAN_ENDDT"
+          },
+          "status": {
+            "type": "integer",
+            "description": "Http response code",
+            "format": "int32",
+            "example": 400
+          },
+          "detail": {
+            "type": "string",
+            "maxLength": 50,
+            "description": "Error details"
+          }
+        }
+      },
+      "CalculatedCompoundedInArrearsRatesSummary": {
+        "title": "CalculatedCompoundedInArrearsRatesSummary",
+        "description": "Calculated Compounded In Arrears Rates Summary",
+        "type": "object",
+        "required": [
+          "interestPeriodDate",
+          "interestPeriodDays",
+          "observationPeriodDate",
+          "observationPeriodDays",
+          "rateApplied"
+        ],
+        "properties": {
+          "interestPeriodDate": {
+            "title": "Interest Period Date",
+            "type": "string",
+            "description": "The date in the interest period for which calculated ARR Compounded Rate is displayed in the output.</br>The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "interestPeriodDays": {
+            "title": "Interest Period Days",
+            "type": "integer",
+            "description": "Number of days in the interest period (from and including the interestPeriodStartDate) for which the calculated Compounded Rate is applicable",
+            "format": "int32",
+            "example": 1
+          },
+          "observationPeriodDate": {
+            "title": "Observation Period Date",
+            "type": "string",
+            "description": "The date in the observation period for which the published ARR rate (rateApplied) and the corresponding weightage of that rate is used for ARR Compounding calculation.</br>Populated only if the observationPeriodShift is true </br> Observation Period is defined as commencing 'x' number of business days (lookback days) prior to the start  (first day) of the interest period.</br>The date is in ISO 8601 Date Format yyyy-mm-dd.",
+            "format": "date"
+          },
+          "observationPeriodDays": {
+            "title": "Observation Period Days",
+            "type": "integer",
+            "description": "Number of days in the observation period (from and including the start of Observation Period).</br>Populated only if the observationPeriodShift is true </br> type: integer($int32)",
+            "format": "int32",
+            "example": 1
+          },
+          "publishedRiskFreeRate": {
+            "title": "Published Risk Free rate",
+            "type": "number",
+            "format": "double",
+            "description": "The published ARR rate applied for the interestPeriodDate (if observationPeriodShift = false) or observationPeriodDate (if observationPeriodShift = true).",
+            "example": 1.04085026
+          },
+          "rateApplied": {
+            "title": "RateApplied",
+            "type": "number",
+            "format": "double",
+            "description": "The ARR Rate applied, after factoring in the riskFreeRateFloor value, for the interestPeriodDate. If the published risk-free rate is lower than the floor value, rateApplied = riskFreeRateFloor. Otherwise, rateApplied = publishedRiskFreeRate.",
+            "example": 1.04085026
+          },
+          "riskFreeRateFloorApplied": {
+            "title": "Risk Free Rate Floor Applied",
+            "type": "boolean",
+            "description": "Indicates whether the rateApplied has factored the riskFreeRateFloor value, for the interestPeriodDate (Value = True) or not (Value = False).",
+            "default": false
+          },
+          "averageCompoundedRate": {
+            "title": "Average Compounded Rate",
+            "format": "double",
+            "type": "number",
+            "description": "The calculated Average Compounded in Arrears Rate, applicable for the interestPeriodDays, rounded to roundingDecimalPoints. </br>. (dot) is the only character supported for decimal place separator.",
+            "example": 1.0404
+          }
+        }
+      },
+      "AverageCompoundedRate": {
+        "title": "AverageCompoundedRate",
+        "description": "If showDailyDetails = true, CalculatedCompoundedInArrearsRates displays the averageCompoundedRate upto (and including) calculateTillDate, if it is outside the Rate Known Window, or upto (and including) the interestPeriodEndDate otherwise. </br>If showDailyDetails = false, displays the averageCompoundedRate only for calculateTillDate, if it is outside the Rate Known Window, or only for the last business day for the interest period otherwise.",
+        "type": "object",
+        "properties": {
+          "dailyRateSummary": {
+            "type": "array",
+            "description": "If showDailyDetails = true, CalculatedCompoundedInArrearsRates displays the averageCompoundedRate upto (and including) calculateTillDate, if it is outside the Rate Known Window, or upto (and including) the interestPeriodEndDate otherwise. </br>If showDailyDetails = false, displays the averageCompoundedRate only for calculateTillDate, if it is outside the Rate Known Window, or only for the last business day for the interest period otherwise.",
+            "items": {
+              "$ref": "#/components/schemas/CalculatedCompoundedInArrearsRatesSummary"
+            }
+          },
+          "requestParameters": {
+            "$ref": "#/components/schemas/RateRequestParameter"
+          },
+          "comment": {
+            "title": "Comments",
+            "maxLength": 300,
+            "type": "string",
+            "description": "Captures additional narration for the calculations performed. Currently, it displays the time stamp when the calculation was completed. Format in ISO 8601 is \"Computed time : yyyy-MM-dd'T'HH:mm:ssXXX.\"",
+            "example": "Computed time : 2020-08-20T11:53:07+00:00. Computed time is the time stamp when the calculation was completed."
+          },
+          "lastUpdatedFromSource": {
+            "title": "LastUpdatedFromSource",
+            "type": "string",
+            "description": "The most recent timestamp when the published ARR rate data was consumed by the Calculator from the relevant source (e.g. NewYork Federal Reserve for SOFR). </br>Format in ISO 8601 is \"yyyy-MM-dd'T'HH:mm:ssXXX\"",
+            "format": "date-time",
+            "example": "2020-08-20T11:53:07+00:00"
+          },
+          "legalDisclaimer": {
+            "title": "Legal Disclaimer",
+            "maxLength": 2000,
+            "type": "string",
+            "description": "The End User Terms for using this Calculator",
+            "example": "Use subject to New York Fed Terms of Use for Select Rate Data.  New York Fed has no liability for your use.  Refer the following link for more details: https://www.newyorkfed.org/markets/reference-rates-terms-of-use"
+          }
+        }
+      },
+      "CalculatedCompoundedInArrearsInterestSummary": {
+        "title": "CalculatedCompoundedInArrearsInterestSummary",
+        "description": "Calculated Compounded In Arrears Interest Summary",
+        "type": "object",
+        "properties": {
+          "principalBalance": {
+            "title": "Principal Balance",
+            "type": "number",
+            "format": "double",
+            "description": "Principal balance as on interestPeriodDate. </br>. (dot) is the only character supported for decimal place separator. Cannot have a thousands separator.",
+            "example": 100000
+          },
+          "interestPeriodDate": {
+            "title": "Interest Period Date",
+            "type": "string",
+            "description": "The date in the interest period for which calculated ARR Compounded Rate is displayed in the output.</br>The date is in ISO 8601 Date Format yyyy-mm-dd.",
+            "format": "date"
+          },
+          "interestPeriodDays": {
+            "title": "Interest Period Days",
+            "type": "integer",
+            "description": "Number of days in the interest period (from and including the interestPeriodStartDate) for which the calculated Compounded Rate is applicable",
+            "format": "int32",
+            "example": 1
+          },
+          "observationPeriodDate": {
+            "title": "Observation Period Date",
+            "type": "string",
+            "description": "The date in the observation period for which the published ARR rate (rateApplied) and the corresponding weightage of that rate is used for ARR Compounding calculation.</br>Populated only if the observationPeriodShift is true </br> Observation Period is defined as commencing 'x' number of business days (lookback days) prior to the start  (first day) of the interest period.</br>The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "observationPeriodDays": {
+            "title": "Observation Period Days",
+            "type": "integer",
+            "description": "Number of days in the observation period (from and including the start of Observation Period).</br>Populated only if the observationPeriodShift is true",
+            "format": "int32",
+            "example": 1
+          },
+          "publishedRiskFreeRate": {
+            "title": "Published Risk Free rate",
+            "type": "number",
+            "format": "double",
+            "description": "The published ARR rate applied for the interestPeriodDate (if observationPeriodShift = false) or observationPeriodDate (if observationPeriodShift = true).",
+            "example": 1.04085026
+          },
+          "rateApplied": {
+            "title": "RateApplied",
+            "type": "number",
+            "format": "double",
+            "description": "The ARR Rate applied, after factoring in the riskFreeRateFloor value, for the interestPeriodDate. If the published risk-free rate is lower than the floor value, rateApplied = riskFreeRateFloor. Otherwise, rateApplied = publishedRiskFreeRate.",
+            "example": 1.04085026
+          },
+          "riskFreeRateFloorApplied": {
+            "title": "Risk Free Rate Floor Applied",
+            "type": "boolean",
+            "description": "Indicates whether the rateApplied has factored the riskFreeRateFloor value, for the interestPeriodDate (Value = true) or not (Value = false).",
+            "default": false
+          },
+          "allInRateFloorApplied": {
+            "title": "All in Rate Floor Applied",
+            "type": "boolean",
+            "description": "Indicates whether the allInRate has factored the allInRateFloor value, for the interestPeriodDate (Value = true) or not (Value = false).",
+            "default": false
+          },
+          "allInRateCapApplied": {
+            "title": "All in Rate Cap Applied",
+            "type": "boolean",
+            "description": "Indicates whether the allInRate has factored the allInRateCap value, for the interestPeriodDate (Value = true) or not (Value = false).",
+            "default": false
+          },
+          "calculatedAllInRate": {
+            "title": "All in rate",
+            "type": "number",
+            "format": "double",
+            "description": "The calculated All-in Rate before applying the All in Rate Cap or Floor. Equals sum of averageCompoundedRate, spread, and spreadAdjustment, rounded to roundingDecimalPoints. </br>. (dot) is the only character supported for decimal place separator.",
+            "example": 2.19
+          },
+          "allInRate": {
+            "title": "All in rate",
+            "type": "number",
+            "format": "double",
+            "description": "The All-in Rate applied, after factoring in the allInRateFloor or allInRateCap value, to the calculatedAllInRate Value, based on the following criteria, rounded to rateRoundingDecimalPoints. This field is used for accrued interest computation.</br> If the calculatedAllInRate is lower than the allInRateFloor value, rateApplied = allInRateFloor.</br> If the calculatedAllInRate is greater than the allInRateCap value, rateApplied = allInRateCap.</br> Otherwise, allInRate = calculatedAllIinRate.</br>",
+            "example": 2.19
+          },
+          "cummulativeInterestAmount": {
+            "title": "Cumulative Interest Amount",
+            "type": "number",
+            "format": "double",
+            "description": "Calculated cumulative interest accrued amount for the interestPeriodDays.</br>Rate Basis used for interest computation is as per DayCountConvention. </br>. (dot) is the only character supported for decimal place separator. Cannot have a thousands separator."
+          },
+          "averageCompoundedRate": {
+            "title": "Average Compounded Rate",
+            "type": "number",
+            "format": "double",
+            "description": "The calculated Average Compounded in Arrears Rate, applicable for the interestPeriodDays, rounded to roundingDecimalPoints. </br>. (dot) is the only character supported for decimal place separator.",
+            "example": 1.00023
+          }
+        }
+      },
+      "PrincipalChange": {
+        "title": "PrincipalChange",
+        "description": "Principal Change",
+        "type": "object",
+        "properties": {
+          "date": {
+            "title": "Date",
+            "type": "string",
+            "description": "Date from which the Principal change is effective from",
+            "format": "date",
+            "example": "2020-04-18"
+          },
+          "principalAmountChange": {
+            "title": "Principal amount change",
+            "type": "number",
+            "format": "double",
+            "description": "The amount of the Principal Change. Principal Decreases are negative.</br>Principal Change Currency is assumed as USD if riskFreeRate = SOFR, or GBP if riskFreeRate = SONIA. </br>. (dot) is the only character supported for decimal place separator. Cannot have a thousands separator.",
+            "example": 1000000
+          }
+        }
+      },
+      "PaymentRoundingMethod": {
+        "title": "PaymentRoundingMethod",
+        "type": "string",
+        "description": "Rule to round the calculated interest accrued amounts",
+        "default": "NEAREST",
+        "enum": [
+          "ACTUAL",
+          "UP",
+          "DOWN",
+          "NEAREST"
+        ]
+      },
+      "SimpleARRRate": {
+        "title": "SimpleARRRate",
+        "description": "If showDailyDetails = true, dailyRateSummary displays the daily ARR Rates upto (and including) calculateTillDate, if it is outside the Rate Known Window, or upto (and including) the interestPeriodEndDate otherwise. </br>If showDailyDetails = false, dailyRateSummary displays the daily ARR Rate only for calculateTillDate, if it is outside the Rate Known Window, or only for the last business day for the interest period otherwise.",
+        "type": "object",
+        "properties": {
+          "dailyRateSummary": {
+            "type": "array",
+            "description": "If showDailyDetails = true, dailyRateSummary displays the daily ARR Rates upto (and including) calculateTillDate, if it is outside the Rate Known Window, or upto (and including) the interestPeriodEndDate otherwise. </br>If showDailyDetails = false, dailyRateSummary displays the daily ARR Rate only for calculateTillDate, if it is outside the Rate Known Window, or only for the last business day for the interest period otherwise.",
+            "items": {
+              "$ref": "#/components/schemas/CalculatedSimpleARRRatesSummary"
+            }
+          },
+          "requestParameters": {
+            "$ref": "#/components/schemas/SimpleARRRateRequestParameter"
+          },
+          "comment": {
+            "title": "Comments",
+            "maxLength": 300,
+            "type": "string",
+            "description": "Captures additional narration for the calculations performed. Currently, it displays the time stamp when the calculation was completed. Format in ISO 8601 is \"Computed time yyyy-MM-dd'T'HH:mm:ssXXX\".",
+            "example": "Computed time : 2020-08-20T11:53:07+00:00. Computed time is the time stamp when the calculation was completed."
+          },
+          "lastUpdatedFromSource": {
+            "title": "LastUpdatedFromSource",
+            "type": "string",
+            "description": "The most recent timestamp when the published ARR rate data was consumed by the Calculator from the relevant source (e.g. NewYork Federal Reserve for SOFR) </br>Format in ISO 8601 is \"yyyy-MM-dd'T'HH:mm:ssXXX\"",
+            "maxLength": 50,
+            "example": "2020-08-20T11:53:07+00:00"
+          },
+          "legalDisclaimer": {
+            "title": "Legal Disclaimer",
+            "maxLength": 2000,
+            "type": "string",
+            "description": "The End User Terms for using this Calculator",
+            "example": "Use subject to New York Fed Terms of Use for Select Rate Data.  New York Fed has no liability for your use.  Refer the following link for more details: https://www.newyorkfed.org/markets/reference-rates-terms-of-use"
+          }
+        }
+      },
+      "CalculatedSimpleARRInterestSummary": {
+        "title": "CalculatedSimpleARRInterestSummary",
+        "description": "Calculated Simple ARR Interest Summary",
+        "type": "object",
+        "properties": {
+          "principalBalance": {
+            "title": "Principal Balance",
+            "type": "number",
+            "format": "double",
+            "description": "Principal balance as on interestPeriodDate. </br>. (dot) is the only character supported for decimal place separator. Cannot have a thousands separator.",
+            "example": 100000
+          },
+          "interestPeriodDate": {
+            "title": "Interest Period Date",
+            "type": "string",
+            "description": "The date in the interest period for which rateApplied is displayed. The date is in ISO 8601 Date Format yyyy-mm-dd.",
+            "format": "date"
+          },
+          "interestPeriodDays": {
+            "title": "Interest Period Days",
+            "type": "integer",
+            "description": "Number of days in the interest period for which rateApplied is applicable.",
+            "format": "int32",
+            "example": 1
+          },
+          "publishedRiskFreeRate": {
+            "title": "Published Risk Free rate",
+            "type": "number",
+            "format": "double",
+            "description": "The published ARR Rate for the interestPeriodDate.",
+            "example": 1.04085026
+          },
+          "rateApplied": {
+            "title": "RateApplied",
+            "type": "number",
+            "format": "double",
+            "description": "The ARR Rate applied, after factoring in the riskFreeRateFloor value, for the interestPeriodDate, rounded to rateRoundingDecimalPoints.</br> If the published risk-free rate is lower than the floor value, rateApplied = riskFreeRateFloor. Otherwise, rateApplied = publishedRiskFreeRate.",
+            "example": 1.04085026
+          },
+          "riskFreeRateFloorApplied": {
+            "title": "Risk Free Rate Floor Applied",
+            "type": "boolean",
+            "description": "Indicates whether the rateApplied has factored the riskFreeRateFloor value, for the interestPeriodDate (Value = True) or not (Value = False).",
+            "default": false
+          },
+          "allInRateFloorApplied": {
+            "title": "All in Rate Floor Applied",
+            "type": "boolean",
+            "description": "Indicates whether the allInRate has factored the allInRateFloor value, for the interestPeriodDate (Value = true) or not (Value = false).",
+            "default": false
+          },
+          "allInRateCapApplied": {
+            "title": "All in Rate Cap Applied",
+            "type": "boolean",
+            "description": "Indicates whether the allInRate has factored the allInRateCap value, for the interestPeriodDate (Value = true) or not (Value = false).",
+            "default": false
+          },
+          "calculatedAllInRate": {
+            "title": "All in rate",
+            "type": "number",
+            "format": "double",
+            "description": "The calculated All-in Rate before applying the All in Rate Cap or Floor. Equals sum of rateApplied, spread, and spreadAdjustment, rounded to roundingDecimalPoints. </br>. (dot) is the only character supported for decimal place separator.",
+            "example": 2.19
+          },
+          "allInRate": {
+            "title": "All in rate",
+            "type": "number",
+            "format": "double",
+            "description": "The All-in Rate applied, after factoring in the allInRateFloor or allInRateCap value, to the calculatedAllInRate Value, based on the following criteria, rounded to rateRoundingDecimalPoints. This field is used for accrued interest computation.</br> If the calculatedAllInRate is lower than the allInRateFloor value, rateApplied = allInRateFloor.</br> If the calculatedAllInRate is greater than the allInRateCap value, rateApplied = allInRateCap.</br> Otherwise, allInRate = calculatedAllIinRate.</br>",
+            "example": 2.19
+          },
+          "interestAmount": {
+            "title": "Interest for this date",
+            "type": "number",
+            "format": "double",
+            "description": "Calculated interest accrued amount from (and including) the interestPeriodDate to (but excluding) the next business day. </br>Rate Basis used for interest computation is as per DayCountConvention. </br>. (dot) is the only character supported for decimal place separator. Cannot have a thousands separator.",
+            "example": 100000
+          },
+          "cummulativeInterestAmount": {
+            "title": "Cumulative Interest Amount",
+            "type": "number",
+            "format": "double",
+            "description": "Calculated cumulative interest accrued amount for the interestPeriodDays from (and including) the interestPeriodStartDate.</br>Rate Basis used for interest computation is as per DayCountConvention. </br>. (dot) is the only character supported for decimal place separator. Cannot have a thousands separator."
+          }
+        }
+      },
+      "CalculatedSimpleARRRatesSummary": {
+        "title": "CalculatedSimpleARRRatesSummary",
+        "description": "Calculated Simple ARR Rates Summary",
+        "type": "object",
+        "properties": {
+          "interestPeriodDate": {
+            "title": "Interest Period Date",
+            "type": "string",
+            "description": "The date in the interest period for which rateApplied is displayed. The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "interestPeriodDays": {
+            "title": "Interest Period Days",
+            "type": "integer",
+            "description": "Number of days in the interest period for which rateApplied is applicable",
+            "format": "int32",
+            "example": 1
+          },
+          "publishedRiskFreeRate": {
+            "title": "Published Risk Free rate",
+            "type": "number",
+            "format": "double",
+            "description": "The published ARR Rate for the interestPeriodDate",
+            "example": 1.04085026
+          },
+          "rateApplied": {
+            "title": "RateApplied",
+            "type": "number",
+            "format": "double",
+            "description": "The ARR Rate applied, after factoring in the riskFreeRateFloor value, for the interestPeriodDate, rounded to rateRoundingDecimalPoints. </br?>If the published risk-free rate is lower than the floor value, rateApplied = riskFreeRateFloor. Otherwise, rateApplied = publishedRiskFreeRate.",
+            "example": 1.04085026
+          },
+          "riskFreeRateFloorApplied": {
+            "title": "Risk Free Rate Floor Applied",
+            "type": "boolean",
+            "description": "Indicates whether the rateApplied has factored the riskFreeRateFloor value, for the interestPeriodDate (Value = True) or not (Value = False).",
+            "default": false
+          }
+        }
+      },
+      "SimpleARRRateRequestParameter": {
+        "title": "SimpleARRRateRequestParameter",
+        "description": "Base Request parameters for Simple ARR",
+        "required": [
+          "interestPeriodEndDate",
+          "interestPeriodStartDate",
+          "riskFreeRate"
+        ],
+        "type": "object",
+        "properties": {
+          "showDailyDetails": {
+            "title": "Show daily details",
+            "type": "boolean",
+            "description": "Indicates whether ARR Rates in the output appear for all business days (Value = True), only if interestPeriodStartDate or interestPeriodEndDate is provided or only for the last business day for the interest period (Value = False)",
+            "default": false
+          },
+          "interestPeriodStartDate": {
+            "title": "Interest Period Start Date",
+            "type": "string",
+            "description": "The start date of the interest period from (and including) which the ARR Rate to be applied is calculated. The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "interestPeriodEndDate": {
+            "title": "Interest Period End Date",
+            "type": "string",
+            "description": "The end date to (and including) the ARR Rate to be applied is calculated. This can correspond either to the interest accrual end date or in certain cases, any intermediate date in the interest period upto (and including) which the ARR Rate to be applied is identified. If an interest accrual end date is provided, then the calculateTillDate is needed the cycle is not in rates know window.</br> The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "riskFreeRate": {
+            "title": "Risk free rate",
+            "type": "string",
+            "description": "The name of the Risk Free Rate/Alternative Reference Rate </br>Available values : SOFR, SONIA",
+            "enum": [
+              "SOFR",
+              "SONIA"
+            ]
+          },
+          "riskFreeRateFloor": {
+            "title": "Risk free rate Floor",
+            "type": "number",
+            "format": "double",
+            "description": "Risk free rate floor will be considered if the published risk free Rate is less than the risk free rate floor. It is a percentage and excepts upto 6 decimal points.",
+            "example": 0.002012
+          },
+          "lookBackDays": {
+            "title": "Look back days",
+            "maximum": 99,
+            "minimum": 0,
+            "type": "integer",
+            "description": "Lookback days refers to the fixed date (business days prior to) from which the calculator is expected to use the published Risk Free Rate/Alternative Reference Rate </BR>Minimum Value = 0, Maximum Value = 99",
+            "format": "int32",
+            "default": 0
+          },
+          "lockoutDays": {
+            "title": "Lock out days",
+            "maximum": 99,
+            "minimum": 0,
+            "type": "integer",
+            "description": "Lockout days refers to the period (business days) in which the applicable ARR is derived using Lookback days and applied to all the days defined as Lockout days</BR> Minimum Value = 0, Maximum Value = 99",
+            "format": "int32",
+            "default": 0
+          },
+          "rateRoundingDecimalPoints": {
+            "title": "Rounding decimal points",
+            "maximum": 6,
+            "minimum": 2,
+            "type": "integer",
+            "description": "Rounds the rateApplied in the API output to the specified decimal precision. Minimum Value = 2, Maximum Value = 6</br>Default value : for SOFR = 2, for SONIA = 4",
+            "format": "int32",
+            "example": 6
+          },
+          "dayCountConvention": {
+            "title": "Day Count Convention",
+            "maxLength": 15,
+            "type": "string",
+            "description": "The Day Count Conventions supported. Valid value are - ACT/360, ACT/365 & ACT/ACT.</br> Default Value: for SOFR= ACT/360, for SONIA = ACT/365 ",
+            "example": "ACT/360"
+          },
+          "calculateTillDate": {
+            "title": "Calculate till Date",
+            "type": "string",
+            "description": "Date upto which the rates are calculated if cycle is not in the rates known window. The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          }
+        }
+      },
+      "SimpleARRInterestCompoundingArrears": {
+        "title": "SimpleARRInterestCompoundingArrears",
+        "description": "If showDailyDetails = true, interestSummary displays the daily ARR Rates upto (and including)  calculateTillDate, if it is outside the Rate Known Window, or upto (and including) the interestPeriodEndDate otherwise. </br> If showDailyDetails = false, interestSummary displays the daily ARR Rate only for calculateTillDate, if it is outside the Rate Known Window, or only for the last business day for the interest period otherwise.",
+        "type": "object",
+        "properties": {
+          "interestSummary": {
+            "type": "array",
+            "description": "If showDailyDetails = true, interestSummary displays the daily ARR Rates upto (and including)  calculateTillDate, if it is outside the Rate Known Window, or upto (and including) the interestPeriodEndDate otherwise. </br> If showDailyDetails = false, interestSummary displays the daily ARR Rate only for calculateTillDate, if it is outside the Rate Known Window, or only for the last business day for the interest period otherwise.",
+            "items": {
+              "$ref": "#/components/schemas/CalculatedSimpleARRInterestSummary"
+            }
+          },
+          "requestParameters": {
+            "$ref": "#/components/schemas/SimpleARRInterestCalculatorCriteria"
+          },
+          "currencyCode": {
+            "title": "Currency Code",
+            "maxLength": 3,
+            "type": "string",
+            "description": "Currency code for the principalBalance and cumulativeInterestAmount",
+            "example": "USD"
+          },
+          "comment": {
+            "title": "Comments",
+            "maxLength": 300,
+            "type": "string",
+            "description": "Captures additional narration for the calculations performed. Currently, it displays the time stamp when the calculation was completed. Format in ISO 8601 is \"Computed time yyyy-MM-dd'T'HH:mm:ssXXX\".",
+            "example": "Computed time : 2020-08-20T11:53:07+00:00. Computed time is the time stamp when the calculation was completed."
+          },
+          "lastUpdatedFromSource": {
+            "title": "LastUpdatedFromSource",
+            "type": "string",
+            "description": "The most recent timestamp when the published ARR rate data was consumed by the Calculator from the relevant source (e.g. NewYork Federal Reserve for SOFR). Format in ISO 8601 is \"yyyy-MM-dd'T'HH:mm:ssXXX\"",
+            "maxLength": 50,
+            "example": "2020-08-20T11:53:07+00:00"
+          },
+          "legalDisclaimer": {
+            "title": "Legal Disclaimer",
+            "maxLength": 2000,
+            "type": "string",
+            "description": "The End User Terms for using this Calculator",
+            "example": "Use subject to New York Fed Terms of Use for Select Rate Data.  New York Fed has no liability for your use.  Refer the following link for more details: https://www.newyorkfed.org/markets/reference-rates-terms-of-use"
+          }
+        }
+      },
+      "SimpleARRInterestCalculatorCriteria": {
+        "title": "SimpleARRInterestCalculatorCriteria",
+        "description": "Simple ARR Interest Calculator Criteria",
+        "type": "object",
+        "required": [
+          "interestPeriodStartDate",
+          "interestPeriodEndDate",
+          "riskFreeRate",
+          "initialPrincipalBalance"
+        ],
+        "properties": {
+          "interestPeriodStartDate": {
+            "title": "Interest Period Start Date",
+            "type": "string",
+            "description": "The start date of the interest period.</br> The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "interestPeriodEndDate": {
+            "title": "Interest Period End Date",
+            "type": "string",
+            "description": "The end date of the interest period to (and including) which the Simple ARR method is applied.</br> The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "initialPrincipalBalance": {
+            "title": "Initial Principal balance",
+            "type": "number",
+            "format": "double",
+            "description": "Principal Balance as on the interestPeriodStartDate. Currency assumed is USD if riskFreeRate = SOFR, or GBP if riskFreeRate = SONIA. </br>. (dot) is the only character supported for decimal place separator. Cannot have a thousands separator.",
+            "example": 100000
+          },
+          "riskFreeRate": {
+            "title": "Risk free rate",
+            "minLength": 1,
+            "type": "string",
+            "description": "The name of the Risk Free Rate/Alternative Reference Rate </br>Available values : SOFR, SONIA",
+            "enum": [
+              "SOFR",
+              "SONIA"
+            ]
+          },
+          "riskFreeRateFloor": {
+            "title": "Risk free rate Floor",
+            "type": "number",
+            "format": "double",
+            "description": "The Floor value (as a percentage) for the published risk-free reference rate. Accepts upto 6 decimal points. Minimum Value = -100, Maximum Value = 100.",
+            "example": 0.002012
+          },
+          "allInRateFloor": {
+            "title": "All in rate Floor",
+            "type": "number",
+            "format": "double",
+            "description": "The Floor value (as a percentage) for the all in rate. Accepts upto 6 decimal points."
+          },
+          "allInRateCap": {
+            "title": "All in rate Cap",
+            "type": "number",
+            "format": "double",
+            "description": "The Cap value (as a percentage) for the all in rate. Accepts upto 6 decimal points."
+          },
+          "lookBackDays": {
+            "title": "Look back days",
+            "maximum": 99,
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32",
+            "description": "Lookback days refers to the fixed date (business days prior to) from which the calculator is expected to use the published Risk Free Rate/Alternative Reference Rate </BR>Minimum Value = 0, Maximum Value = 99",
+            "default": 0
+          },
+          "lockoutDays": {
+            "title": "Lock out days",
+            "maximum": 99,
+            "minimum": 0,
+            "type": "integer",
+            "description": "Lockout days refers to the period (business days) in which the applicable ARR is derived using Lookback days and applied to all the days defined as Lockout days</BR> Minimum Value = 0, Maximum Value = 99",
+            "format": "int32",
+            "default": 0
+          },
+          "rateRoundingDecimalPoints": {
+            "title": "Rounding decimal points",
+            "maximum": 6,
+            "minimum": 2,
+            "type": "integer",
+            "description": "Rounds the rateApplied, calculatedAllIinRate and allInRate in the API output to the specified decimal precision. </br> Default value : for SOFR =2, for SONIA = 4",
+            "format": "int32",
+            "example": 6
+          },
+          "dayCountConvention": {
+            "title": "Day Count Convention",
+            "maxLength": 60,
+            "type": "string",
+            "description": "The Day Count Conventions supported. Valid value are - ACT/360, ACT/365 & ACT/ACT.</br> Default Value: If SOFR then default to ACT/360, If SONIA then ACT/365.",
+            "example": "ACT/360"
+          },
+          "principalAmountChanges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PrincipalChange"
+            }
+          },
+          "spread": {
+            "title": "Spread",
+            "type": "number",
+            "format": "double",
+            "description": "Spread (percentage) applicable during the interest period.  </br>Default Value: 0.00%. Up to 6 decimals points are supported. Minimum Value = -100, Maximum Value = 100.",
+            "default": 0
+          },
+          "spreadAdjustment": {
+            "title": "Spread Adjustment",
+            "type": "number",
+            "format": "double",
+            "description": "Spread Adjustment (percentage) during the interest period.  </br>Default Value: 0.00%. Minimum Value = -100, Maximum Value = 100.",
+            "default": 0
+          },
+          "paymentRounding": {
+            "$ref": "#/components/schemas/PaymentRoundingMethod"
+          },
+          "showDailyDetails": {
+            "title": "Show daily details",
+            "type": "boolean",
+            "description": "Indicates whether ARR Rates/Interest computations in the output appear for all business days (Value = True) OR only for the calculateTillDate or last business day for the interest period (Value = False), based on whether calculateTillDate is outside the rates-known window or not, respectively.</br> Default value : false",
+            "default": false
+          },
+          "calculateTillDate": {
+            "title": "Calculate till Date",
+            "type": "string",
+            "description": "The Date upto (and including) which the ARR rates are expected in the output. The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          }
+        }
+      },
+      "InterestCalculatorCriteria": {
+        "title": "InterestCalculatorCriteria",
+        "description": "Interest Calculator Input Criteria",
+        "type": "object",
+        "required": [
+          "interestPeriodStartDate",
+          "interestPeriodEndDate",
+          "riskFreeRate",
+          "initialPrincipalBalance"
+        ],
+        "properties": {
+          "interestPeriodStartDate": {
+            "title": "Interest Period Start Date",
+            "type": "string",
+            "description": "The start date of the interest period from (and including) which the ARR Compounding Calculation should be performed.</br>The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "interestPeriodEndDate": {
+            "title": "Interest Period End Date",
+            "type": "string",
+            "description": "The end date of the interest period to (and including) which the ARR compounding calculation should be performed.</BR> The date is in ISO 8601 Date Format yyyy-mm-dd.",
+            "format": "date"
+          },
+          "initialPrincipalBalance": {
+            "title": "Initial Principal balance",
+            "type": "number",
+            "format": "double",
+            "description": "Principal Balance as on the interestPeriodStartDate. Currency is assumed is USD if riskFreeRate = SOFR, or GBP if riskFreeRate = SONIA. </br>. (dot) is the only character supported for decimal place separator. Cannot have a thousands separator.",
+            "example": 100000
+          },
+          "riskFreeRate": {
+            "title": "Risk free rate",
+            "minLength": 1,
+            "type": "string",
+            "description": "The name of the Risk Free Rate/Alternative Reference Rate </br>Available values : SOFR, SONIA",
+            "enum": [
+              "SOFR",
+              "SONIA"
+            ]
+          },
+          "riskFreeRateFloor": {
+            "title": "Risk free rate Floor",
+            "type": "number",
+            "format": "double",
+            "description": "The Floor value (as a percentage) for the published risk-free reference rate. Accepts upto 6 decimal points. Minimum Value = -100, Maximum Value = 100.",
+            "example": 0.002012
+          },
+          "allInRateFloor": {
+            "title": "All in rate Floor",
+            "type": "number",
+            "format": "double",
+            "description": "The Floor value (as a percentage) for the all in rate. Accepts upto 6 decimal points."
+          },
+          "allInRateCap": {
+            "title": "All in rate Cap",
+            "type": "number",
+            "format": "double",
+            "description": "The Cap value (as a percentage) for the all in rate. Accepts upto 6 decimal points."
+          },
+          "lookBackDays": {
+            "title": "Look back days",
+            "maximum": 99,
+            "minimum": 0,
+            "type": "integer",
+            "format": "int32",
+            "description": "Lookback days refers to the fixed date (business days prior to) from which the calculator is expected to use the published Risk Free Rate/Alternative Reference Rate </BR>Minimum Value = 0, Maximum Value = 99",
+            "default": 0
+          },
+          "lockoutDays": {
+            "title": "Lock out days",
+            "maximum": 99,
+            "minimum": 0,
+            "type": "integer",
+            "description": "Lockout days refers to the period (business days) in which the applicable ARR is derived using Lookback days and applied to all the days defined as Lockout days</BR> Minimum Value = 0, Maximum Value = 99",
+            "format": "int32",
+            "default": 0
+          },
+          "observationPeriodShift": {
+            "title": "Observation period shift",
+            "type": "boolean",
+            "description": "Indicates whether Observation Period Shift is applicable or not. Not supported if lockout days is non zero or interest period start/end date are non-business day.</br>Default value : false",
+            "default": false
+          },
+          "rateRoundingDecimalPoints": {
+            "title": "Rounding decimal points",
+            "maximum": 12,
+            "minimum": 2,
+            "type": "integer",
+            "description": "Rounds the calculated ARR Rate, calculatedAllIinRate and allInRate to the specified decimal precision.</BR>Minimum Value = 2, Maximum Value = 12 </br>Default value: for SOFR = 5, for SONIA = 4",
+            "format": "int32",
+            "example": 8
+          },
+          "dayCountConvention": {
+            "title": "Day Count Convention",
+            "maxLength": 60,
+            "type": "string",
+            "description": "The Day Count Conventions supported. Valid value are - ACT/360, ACT/365 & ACT/ACT.</br> Default Value: If SOFR then default to ACT/360, If SONIA then ACT/365.",
+            "example": "ACT/360"
+          },
+          "principalAmountChanges": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PrincipalChange"
+            }
+          },
+          "spread": {
+            "title": "Spread",
+            "type": "number",
+            "format": "double",
+            "description": "Spread (percentage) applicable during the interest period. </br>Default Value: 0.00%. Up to 6 decimals points are supported.  </br>Minimum Value = -100, Maximum Value = 100.",
+            "default": 0
+          },
+          "spreadAdjustment": {
+            "title": "Spread Adjustment",
+            "type": "number",
+            "format": "double",
+            "description": "Spread Adjustment (percentage) during the interest period. </br>Default Value: 0.00%. </br>Minimum Value = -100, Maximum Value = 100.",
+            "default": 0
+          },
+          "paymentRounding": {
+            "$ref": "#/components/schemas/PaymentRoundingMethod"
+          },
+          "showDailyDetails": {
+            "title": "Show daily details",
+            "type": "boolean",
+            "description": "Indicates whether the Calculated Compounded Rates/Interest computations in the output appear for all business days (Value = True) OR only for the calculateTillDate or last business day for the interest period (Value = False), based on whether calculateTillDate is outside the rates-known window or not, respectively. </br>Default value : false",
+            "default": false
+          },
+          "calculateTillDate": {
+            "title": "Calculate till Date",
+            "type": "string",
+            "description": "The Date upto (and including) which the calculated compounded rates are expected in the output. The date is in ISO 8601 Date Format yyyy-mm-dd.",
+            "format": "date"
+          }
+        }
+      },
+      "InterestCompoundingArrears": {
+        "title": "InterestCompoundingArrears",
+        "description": "If showDailyDetails = true, interestSummary displays the averageCompoundedRate upto (and including)  calculateTillDate, if it is outside the Rate Known Window, or upto (and including) the interestPeriodEndDate otherwise. </br> If showDailyDetails = false, interestSummary displays the averageCompoundedRate only for calculateTillDate, if it is outside the Rate Known Window, or only for the last business day for the interest period otherwise.",
+        "type": "object",
+        "properties": {
+          "interestSummary": {
+            "type": "array",
+            "description": "If showDailyDetails = true, interestSummary displays the averageCompoundedRate upto (and including)  calculateTillDate, if it is outside the Rate Known Window, or upto (and including) the interestPeriodEndDate otherwise. </br> If showDailyDetails = false, interestSummary displays the averageCompoundedRate only for calculateTillDate, if it is outside the Rate Known Window, or only for the last business day for the interest period otherwise.",
+            "items": {
+              "$ref": "#/components/schemas/CalculatedCompoundedInArrearsInterestSummary"
+            }
+          },
+          "requestParameters": {
+            "$ref": "#/components/schemas/InterestCalculatorCriteria"
+          },
+          "currencyCode": {
+            "title": "Currency Code",
+            "maxLength": 3,
+            "type": "string",
+            "description": "Currency code for the principalBalance and cumulativeInterestAmount",
+            "example": "USD"
+          },
+          "comment": {
+            "title": "Comments",
+            "maxLength": 300,
+            "type": "string",
+            "description": "Captures additional narration for the calculations performed. Currently, it displays the time stamp when the calculation was completed. Format in ISO 8601 is \"Computed time : yyyy-MM-dd'T'HH:mm:ssXXX.\"",
+            "example": "Computed time : 2020-08-20T11:53:07+00:00. Computed time is the time stamp when the calculation was completed."
+          },
+          "lastUpdatedFromSource": {
+            "title": "LastUpdatedFromSource",
+            "type": "string",
+            "description": "The most recent timestamp when the published ARR rate data was consumed by the Calculator from the relevant source (e.g. NewYork Federal Reserve for SOFR).</br>Format in ISO 8601 is \"yyyy-MM-dd'T'HH:mm:ssXXX\"",
+            "format": "date-time",
+            "example": "2020-08-20T11:53:07+00:00"
+          },
+          "legalDisclaimer": {
+            "title": "Legal Disclaimer",
+            "maxLength": 2000,
+            "type": "string",
+            "description": "The End User Terms for using this Calculator",
+            "example": "Use subject to New York Fed Terms of Use for Select Rate Data.  New York Fed has no liability for your use.  Refer the following link for more details: https://www.newyorkfed.org/markets/reference-rates-terms-of-use"
+          }
+        }
+      },
+      "InterestSimpleAverage": {
+        "title": "InterestSimpleAverage",
+        "description": "If showDailyDetails = true, interestSummary displays the simpleAverageRate upto (and including)  calculateTillDate, if it is outside the Rate Known Window, or upto (and including) the interestPeriodEndDate otherwise. </br> If showDailyDetails = false, interestSummary displays the simpleAverageRate only for calculateTillDate, if it is outside the Rate Known Window, or only for the last business day for the interest period otherwise.",
+        "type": "object",
+        "properties": {
+          "interestSummary": {
+            "type": "array",
+            "description": "If showDailyDetails = true, interestSummary displays the simpleAverageRate upto (and including)  calculateTillDate, if it is outside the Rate Known Window, or upto (and including) the interestPeriodEndDate otherwise. </br> If showDailyDetails = false, interestSummary displays the simpleAverageRate only for calculateTillDate, if it is outside the Rate Known Window, or only for the last business day for the interest period otherwise.",
+            "items": {
+              "$ref": "#/components/schemas/CalculatedSimpleAverageInterestSummary"
+            }
+          },
+          "requestParameters": {
+            "$ref": "#/components/schemas/InterestCalculatorCriteria"
+          },
+          "currencyCode": {
+            "title": "Currency Code",
+            "maxLength": 3,
+            "type": "string",
+            "description": "Currency code for the principalBalance and cumulativeInterestAmount",
+            "example": "USD"
+          },
+          "comment": {
+            "title": "Comments",
+            "maxLength": 300,
+            "type": "string",
+            "description": "Captures additional narration for the calculations performed. Currently, it displays the time stamp when the calculation was completed. Format in ISO 8601 is \"Computed time : yyyy-MM-dd'T'HH:mm:ssXXX.\"",
+            "example": "Computed time : 2020-08-20T11:53:07+00:00. Computed time is the time stamp when the calculation was completed."
+          },
+          "lastUpdatedFromSource": {
+            "title": "LastUpdatedFromSource",
+            "type": "string",
+            "description": "The most recent timestamp when the published ARR rate data was consumed by the Calculator from the relevant source (e.g. NewYork Federal Reserve for SOFR).</br>Format in ISO 8601 is \"yyyy-MM-dd'T'HH:mm:ssXXX\"",
+            "format": "date-time",
+            "example": "2020-08-20T11:53:07+00:00"
+          },
+          "legalDisclaimer": {
+            "title": "Legal Disclaimer",
+            "maxLength": 2000,
+            "type": "string",
+            "description": "The End User Terms for using this Calculator",
+            "example": "Use subject to New York Fed Terms of Use for Select Rate Data.  New York Fed has no liability for your use.  Refer the following link for more details: https://www.newyorkfed.org/markets/reference-rates-terms-of-use"
+          }
+        }
+      },
+      "CalculatedDailyCompoundingInterestSummary": {
+        "title": "CalculatedDailyCompoundingInterestSummary",
+        "description": "Calculated Daily Compounding Interest Summary",
+        "type": "object",
+        "properties": {
+          "principalBalance": {
+            "title": "Principal Balance",
+            "type": "number",
+            "format": "double",
+            "description": "Principal balance as on interestPeriodDate. </br>. (dot) is the only character supported for decimal place separator. Cannot have a thousands separator.",
+            "example": 100000
+          },
+          "observationPeriodDate": {
+            "title": "Observation Period Date",
+            "type": "string",
+            "description": "The date in the observation period for which the published ARR rate (rateApplied) and the corresponding weightage of that rate is used for ARR Compounding calculation.</br>Populated only if the observationPeriodShift is true </br> Observation Period is defined as commencing 'x' number of business days (lookback days) prior to the start  (first day) of the interest period.</br>The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "observationPeriodDays": {
+            "title": "Observation Period Days",
+            "type": "integer",
+            "description": "Number of days in the observation period (from and including the start of Observation Period).</br>Populated only if the observationPeriodShift is true </br> type: integer($int32)",
+            "format": "int32",
+            "example": 1
+          },
+          "interestPeriodDate": {
+            "title": "Interest Period Date",
+            "type": "string",
+            "description": "The date in the interest period for which calculated ARR Compounded Rate is displayed in the output.</br>The date is in ISO 8601 Date Format yyyy-mm-dd.",
+            "format": "date"
+          },
+          "interestPeriodDays": {
+            "title": "Interest Period Days",
+            "type": "integer",
+            "description": "Number of days in the interest period (from and including the interestPeriodStartDate) for which the calculated Compounded Rate is applicable </br> type: integer($int32)",
+            "format": "int32",
+            "example": 1
+          },
+          "publishedRiskFreeRate": {
+            "title": "Published Risk Free rate",
+            "type": "number",
+            "format": "double",
+            "description": "The published ARR rate applied for the interestPeriodDate (if observationPeriodShift = false) or observationPeriodDate (if observationPeriodShift = true).",
+            "example": 1.04085026
+          },
+          "rateApplied": {
+            "title": "RateApplied",
+            "type": "number",
+            "format": "double",
+            "description": "The ARR Rate applied, after factoring in the riskFreeRateFloor value, for the interestPeriodDate. If the published risk-free rate is lower than the floor value, rateApplied = riskFreeRateFloor. Otherwise, rateApplied = publishedRiskFreeRate.",
+            "example": 1.04085026
+          },
+          "riskFreeRateFloorApplied": {
+            "title": "Risk Free Rate Floor Applied",
+            "type": "boolean",
+            "description": "Indicates whether the rateApplied has factored the riskFreeRateFloor value, for the interestPeriodDate (Value = true) or not (Value = false).",
+            "default": false
+          },
+          "allInRateFloorApplied": {
+            "title": "All in Rate Floor Applied",
+            "type": "boolean",
+            "description": "Indicates whether the allInRate has factored the allInRateFloor value, for the interestPeriodDate (Value = true) or not (Value = false).",
+            "default": false
+          },
+          "allInRateCapApplied": {
+            "title": "All in Rate Cap Applied",
+            "type": "boolean",
+            "description": "Indicates whether the allInRate has factored the allInRateCap value, for the interestPeriodDate (Value = true) or not (Value = false).",
+            "default": false
+          },
+          "calculatedAllInRate": {
+            "title": "All in rate",
+            "type": "number",
+            "format": "double",
+            "description": "The calculated All-in Rate before applying the All in Rate Cap or Floor. Equals sum of dailyCompoundedRate, spread, and spreadAdjustment, rounded to roundingDecimalPoints. </br>. (dot) is the only character supported for decimal place separator.",
+            "example": 2.19
+          },
+          "allInRate": {
+            "title": "All in rate",
+            "type": "number",
+            "format": "double",
+            "description": "The All-in Rate applied, after factoring in the allInRateFloor or allInRateCap value, to the calculatedAllInRate Value, based on the following criteria, rounded to rateRoundingDecimalPoints. This field is used for accrued interest computation.</br> If the calculatedAllInRate is lower than the allInRateFloor value, rateApplied = allInRateFloor.</br> If the calculatedAllInRate is greater than the allInRateCap value, rateApplied = allInRateCap.</br> Otherwise, allInRate = calculatedAllIinRate.</br>",
+            "example": 2.19
+          },
+          "cummulativeInterestAmount": {
+            "title": "Cumulative Interest Amount",
+            "type": "number",
+            "format": "double",
+            "description": "Calculated cumulative interest accrued amount for the interestPeriodDays.</br>Rate Basis used for interest computation is as per DayCountConvention. </br>. (dot) is the only character supported for decimal place separator. Cannot have a thousands separator."
+          },
+          "interestAmount": {
+            "title": "Interest for this date",
+            "type": "number",
+            "format": "double",
+            "description": "Calculated interest accrued amount from (and including) the interestPeriodDate to (but excluding) the next business day. </br>Rate Basis used for interest computation is as per DayCountConvention. </br>. (dot) is the only character supported for decimal place separator. Cannot have a thousands separator.",
+            "example": 100000
+          },
+          "compoundingFactor": {
+            "title": "Compounding factor",
+            "type": "number",
+            "format": "double",
+            "description": "Ratio of dailyCompoundedRate and the rateApplied, rounded to roundingDecimalPoints. </br>. (dot) is the only character supported for decimal place separator.",
+            "example": 0.10032
+          },
+          "dailyCompoundedRate": {
+            "title": "Daily Compounded rate",
+            "type": "number",
+            "format": "double",
+            "description": "The calculated Daily Compounded Rate (Non Cumulative Compounded Rate), applicable for the interestPeriodDays, rounded to roundingDecimalPoints. </br>. (dot) is the only character supported for decimal place separator.",
+            "example": 1.27003
+          }
+        }
+      },
+      "InterestDailyCompounded": {
+        "title": "InterestDailyCompounded",
+        "description": "If showDailyDetails = true, interestSummary displays the averageCompoundedRate upto (and including)  calculateTillDate, if it is outside the Rate Known Window, or upto (and including) the interestPeriodEndDate otherwise. </br>If showDailyDetails = false, interestSummary displays the averageCompoundedRate only for calculateTillDate, if it is outside the Rate Known Window, or only for the last business day for the interest period otherwise.",
+        "type": "object",
+        "properties": {
+          "currencyCode": {
+            "title": "Currency Code",
+            "maxLength": 3,
+            "type": "string",
+            "description": "Currency code for the principalBalance and cumulativeInterestAmount",
+            "example": "USD"
+          },
+          "interestSummary": {
+            "type": "array",
+            "description": "If showDailyDetails = true, interestSummary displays the averageCompoundedRate upto (and including)  calculateTillDate, if it is outside the Rate Known Window, or upto (and including) the interestPeriodEndDate otherwise. </br>If showDailyDetails = false, interestSummary displays the averageCompoundedRate only for calculateTillDate, if it is outside the Rate Known Window, or only for the last business day for the interest period otherwise.",
+            "items": {
+              "$ref": "#/components/schemas/CalculatedDailyCompoundingInterestSummary"
+            }
+          },
+          "requestParameters": {
+            "$ref": "#/components/schemas/InterestCalculatorCriteria"
+          },
+          "comment": {
+            "title": "Comments",
+            "maxLength": 300,
+            "type": "string",
+            "description": "Captures additional narration for the calculations performed. Currently, it displays the time stamp when the calculation was completed. Format in ISO 8601 is \"Computed time : yyyy-MM-dd'T'HH:mm:ssXXX.\"",
+            "example": "Computed time : 2020-08-20T11:53:07+00:00. Computed time is the time stamp when the calculation was completed."
+          },
+          "lastUpdatedFromSource": {
+            "title": "LastUpdatedFromSource",
+            "type": "string",
+            "description": "The most recent timestamp when the published ARR rate data was consumed by the Calculator from the relevant source (e.g. NewYork Federal Reserve for SOFR)</br>Format in ISO 8601 is \"yyyy-MM-dd'T'HH:mm:ssXXX\"",
+            "format": "date-time",
+            "example": "2020-08-20T11:53:07+00:00"
+          },
+          "legalDisclaimer": {
+            "title": "Legal Disclaimer",
+            "maxLength": 2000,
+            "type": "string",
+            "description": "The End User Terms for using this Calculator",
+            "example": "Use subject to New York Fed Terms of Use for Select Rate Data.  New York Fed has no liability for your use.  Refer the following link for more details: https://www.newyorkfed.org/markets/reference-rates-terms-of-use"
+          }
+        }
+      },
+      "IndexAverageRateRequest": {
+        "title": "IndexAverageRateRequest",
+        "description": "Index Average Rate Request",
+        "required": [
+          "indexEndDate",
+          "indexStartDate",
+          "riskFreeRate"
+        ],
+        "type": "object",
+        "properties": {
+          "indexStartDate": {
+            "title": "Index Start Date",
+            "type": "string",
+            "description": "The Value/Publication Date of the ARR Index corresponding to the start of the interest period. The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "indexEndDate": {
+            "title": "Index End Date",
+            "type": "string",
+            "description": "The Value/Publication Date of the ARR Index corresponding to one calendar day following the interest period end date.</br>Interest period end date corresponds to the date to (and including) which the ARR compounding calculation is performed.<br>The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "riskFreeRate": {
+            "title": "Risk free rate",
+            "minLength": 1,
+            "type": "string",
+            "description": "The name of the Risk Free Rate/Alternative Reference Rate </br>Available values : SOFR, SONIA",
+            "enum": [
+              "SOFR",
+              "SONIA"
+            ]
+          },
+          "rateRoundingDecimalPoints": {
+            "title": "Rate Rounding decimal points",
+            "maximum": 12,
+            "minimum": 2,
+            "type": "integer",
+            "description": "Rounds the calculated Average Compounding in Arrears Rate to the specified decimal precision.</BR>Minimum Value = 2, Maximum Value = 12 </br>Default value: for SOFR = 5",
+            "format": "int32",
+            "example": 8
+          }
+        }
+      },
+      "AverageCompoundedRateIndex": {
+        "title": "AverageCompoundedRateIndex",
+        "description": "Average Compounded Rate Index",
+        "type": "object",
+        "properties": {
+          "requestParameters": {
+            "$ref": "#/components/schemas/IndexAverageRateRequest"
+          },
+          "effectiveStartDate": {
+            "title": "Effective Start Date",
+            "type": "string",
+            "description": "Corresponds to indexStartDate",
+            "format": "date"
+          },
+          "effectiveEndDate": {
+            "title": "Effective End Date",
+            "type": "string",
+            "description": "Corresponds to indexEndDate",
+            "format": "date"
+          },
+          "averageCompoundedRate": {
+            "title": "Average Compounded Rate",
+            "format": "double",
+            "type": "number",
+            "description": "The calculated Average Compounded in Arrears Rate using the index value, rounded to roundingDecimalPoints.</br>This rate corresponds to the interest period starting from (and including ) the indexStartDate to (and excluding) the indexEndDate. </br>. (dot) is the only character supported for decimal place separator.",
+            "example": 1.0408
+          },
+          "indexAtEffectiveStartDate": {
+            "title": "Index At Effective Start Date",
+            "format": "double",
+            "type": "number",
+            "description": "ARR index value for value date equal to indexStartDate. Rounded to 8 dps for SOFR. </br>. (dot) is the only character supported for decimal place separator.",
+            "example": 1.04085026
+          },
+          "indexAtEffectiveEndDate": {
+            "title": "Index At Effective End Date",
+            "format": "double",
+            "type": "number",
+            "description": "ARR index value for value date equal to indexEndDate. Rounded to 8 dps for SOFR. </br>. (dot) is the only character supported for decimal place separator.",
+            "example": 1.04085026
+          },
+          "comment": {
+            "title": "Comments",
+            "maxLength": 300,
+            "type": "string",
+            "description": "Captures additional narration for the calculations performed. Currently, it displays the time stamp when the calculation was completed. Format in ISO 8601 is \"Computed time : yyyy-MM-dd'T'HH:mm:ssXXX.\"",
+            "example": "Computed time : 2020-08-20T11:53:07+00:00. Computed time is the time stamp when the calculation was completed."
+          },
+          "lastUpdatedFromSource": {
+            "title": "LastUpdatedFromSource",
+            "type": "string",
+            "description": "The most recent timestamp when the published ARR Index data was consumed by the Calculator from the relevant source (e.g. NewYork Federal Reserve for SOFR).</br>Format in ISO 8601 is \"yyyy-MM-dd'T'HH:mm:ssXXX\"",
+            "format": "date-time",
+            "example": "2020-08-20T11:53:07+00:00"
+          },
+          "legalDisclaimer": {
+            "title": "Legal Disclaimer",
+            "maxLength": 2000,
+            "type": "string",
+            "description": "The End User Terms for using this Calculator",
+            "example": "Use subject to New York Fed Terms of Use for Select Rate Data.  New York Fed has no liability for your use.  Refer the following link for more details: https://www.newyorkfed.org/markets/reference-rates-terms-of-use"
+          }
+        }
+      },
+      "TenorResponse": {
+        "title": "TenorResponse",
+        "description": "Tenor Response",
+        "type": "object",
+        "properties": {
+          "requestParameters": {
+            "$ref": "#/components/schemas/TenorRequestParameter"
+          },
+          "calculatedCompoundedInArrearsRatesForTenors": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CalculatedCompoundedInArrearsRatesForTenors"
+            }
+          },
+          "comment": {
+            "title": "Comments",
+            "maxLength": 300,
+            "type": "string",
+            "description": "Captures additional narration for the calculations performed. Currently, it displays the time stamp when the calculation was completed. Format in ISO 8601 is \"Computed time : yyyy-MM-dd'T'HH:mm:ssXXX.\"",
+            "example": "Computed time : 2020-08-20T11:53:07+00:00. Computed time is the time stamp when the calculation was completed."
+          },
+          "lastUpdatedFromSource": {
+            "title": "LastUpdatedFromSource",
+            "type": "string",
+            "description": "The most recent timestamp when the published ARR rate data was consumed by the Calculator from the relevant source (e.g. NewYork Federal Reserve for SOFR).</br>Format in ISO 8601 is \"yyyy-MM-dd'T'HH:mm:ssXXX\"",
+            "format": "date-time",
+            "example": "2020-08-20T11:53:07+00:00"
+          },
+          "legalDisclaimer": {
+            "title": "Legal Disclaimer",
+            "maxLength": 2000,
+            "type": "string",
+            "description": "The End User Terms for using this Calculator",
+            "example": "Use subject to New York Fed Terms of Use for Select Rate Data.  New York Fed has no liability for your use.  Refer the following link for more details: https://www.newyorkfed.org/markets/reference-rates-terms-of-use"
+          }
+        }
+      },
+      "TenorRequestParameter": {
+        "title": "TenorRequestParameter",
+        "required": [
+          "riskFreeRate",
+          "valueDate"
+        ],
+        "type": "object",
+        "properties": {
+          "valueDate": {
+            "title": "Interest Period Start Date",
+            "type": "string",
+            "description": "The date corresponding to one calendar day following the interest period end date.</br>Interest period end date corresponds to the date to (and including) which the ARR compounding calculation is performed.</br>Aligns with the definition of publication date of SOFR compounded averages by New York Federal Reserve.</br>The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "riskFreeRate": {
+            "title": "Risk free rate",
+            "minLength": 1,
+            "type": "string",
+            "description": "The name of the Risk Free Rate/Alternative Reference Rate </br>Available values : SOFR, SONIA",
+            "enum": [
+              "SOFR",
+              "SONIA"
+            ]
+          },
+          "rateRoundingDecimalPoints": {
+            "title": "Rounding decimal points",
+            "maximum": 12,
+            "minimum": 2,
+            "type": "integer",
+            "description": "Rounds the calculated Average Compounded in arrears Rate to the specified decimal precision.Not applicable to SOFR compounded averages for standard tenors(30D, 90D and 180D) published by New York Federal Reserve that are displayed in the output. </BR>Minimum Value = 2, Maximum Value = 12  </br>Default value: for SOFR = 5, for SONIA = 4",
+            "format": "int32",
+            "example": 8
+          },
+          "tenor": {
+            "title": "Tenor",
+            "type": "string",
+            "description": "Tenor(s) for which the ARR Compounded Rates are needed. Each Tenor corresponds to an interest period starting (and including) exact number of calendar days in the Tenor before the Value Date, to (but excluding) the Value Date.</br>Available values : 7D, 30D, 60D, 90D, 180D, 360D </br>'D' denotes the number of calendar days</br>If no value is provided, then Compounded in Arrears Rates are displayed for all the 6 tenors in the output.",
+            "example": "7D",
+            "enum": [
+              "7D",
+              "30D",
+              "60D",
+              "90D",
+              "180D",
+              "360D"
+            ]
+          }
+        },
+        "description": "Tenor Request Parameter"
+      },
+      "CalculatedCompoundedInArrearsRatesForTenors": {
+        "title": "CalculatedCompoundedInArrearsRatesForTenors",
+        "description": "Calculated Compounded In Arrears Rates For Tenors",
+        "type": "object",
+        "properties": {
+          "tenor": {
+            "title": "Tenor",
+            "maxLength": 5,
+            "type": "string",
+            "description": "Tenor(s) for which the ARR Compounded in Arrears Rates are displayed",
+            "default": "30D",
+            "example": "7D"
+          },
+          "interestPeriodStartDate": {
+            "title": "Interest Period Start Date",
+            "type": "string",
+            "description": "The start date of the interest period from (and including) which the ARR Compounding Calculation should be performed.</br>The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "interestPeriodEndDate": {
+            "title": "Interest Period End Date",
+            "type": "string",
+            "description": "The end date to (and including) which the ARR compounding calculation should be performed. This can correspond either to the interest accrual end date or in certain cases, any intermediate date in the interest period upto (and including) which the ARR Compounding Calculation is needed.</BR> The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "averageCompoundedRate": {
+            "title": "Average Compounded Rate",
+            "type": "number",
+            "format": "double",
+            "description": "If publishedRate is false, the calculated Average Compounded in Arrears Rate for the tenor, rounded to roundingDecimalPoints </b>If publishedRate is true, SOFR compounded averages for standard tenors(30D, 90D and 180D) published by New York Federal Reserve are displayed. </br>. (dot) is the only character supported for decimal place separator.",
+            "example": 2.19
+          },
+          "publishedRate": {
+            "title": "Published Rate",
+            "type": "boolean",
+            "description": "Indicates if averageCompoundedRate is a calculated rate(Value = false) or a published rate(Value = true)."
+          }
+        }
+      },
+      "CalculatedSimpleAverageRatesSummary": {
+        "title": "CalculatedSimpleAverageRatesSummary",
+        "description": "Calculated Simple Average Rates Summary",
+        "type": "object",
+        "required": [
+          "interestPeriodDate",
+          "interestPeriodDays",
+          "rateApplied"
+        ],
+        "properties": {
+          "interestPeriodDate": {
+            "title": "Interest Period Date",
+            "type": "string",
+            "description": "The date in the interest period for which calculated ARR Simple Average Rate is displayed in the output.</br>The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "interestPeriodDays": {
+            "title": "Interest Period Days",
+            "type": "integer",
+            "description": "Number of days in the interest period (from and including the interestPeriodStartDate) for which the calculated Simple Average Rate is applicable",
+            "format": "int32",
+            "example": 1
+          },
+          "observationPeriodDate": {
+            "title": "Observation Period Date",
+            "type": "string",
+            "description": "The date in the observation period for which the published ARR rate (rateApplied) and the corresponding weightage of that rate is used for ARR Average calculation.</br>Populated only if the observationPeriodShift is true </br> Observation Period is defined as commencing 'x' number of business days (lookback days) prior to the start  (first day) of the interest period.</br>The date is in ISO 8601 Date Format yyyy-mm-dd.",
+            "format": "date"
+          },
+          "observationPeriodDays": {
+            "title": "Observation Period Days",
+            "type": "integer",
+            "description": "Number of days in the observation period (from and including the start of Observation Period).</br>Populated only if the observationPeriodShift is true </br> type: integer($int32)",
+            "format": "int32",
+            "example": 1
+          },
+          "publishedRiskFreeRate": {
+            "title": "Published Risk Free rate",
+            "type": "number",
+            "format": "double",
+            "description": "The published ARR rate applied for the interestPeriodDate (if observationPeriodShift = false) or observationPeriodDate (if observationPeriodShift = true).",
+            "example": 1.04085026
+          },
+          "rateApplied": {
+            "title": "RateApplied",
+            "type": "number",
+            "format": "double",
+            "description": "The ARR Rate applied, after factoring in the riskFreeRateFloor value, for the interestPeriodDate. If the published risk-free rate is lower than the floor value, rateApplied = riskFreeRateFloor. Otherwise, rateApplied = publishedRiskFreeRate.",
+            "example": 1.04085026
+          },
+          "riskFreeRateFloorApplied": {
+            "title": "Risk Free Rate Floor Applied",
+            "type": "boolean",
+            "description": "Indicates whether the rateApplied has factored the riskFreeRateFloor value, for the interestPeriodDate (Value = True) or not (Value = False).",
+            "default": false
+          },
+          "simpleAverageRate": {
+            "title": "Simple Average Rate",
+            "format": "double",
+            "type": "number",
+            "description": "The calculated Simple Average Rate, applicable for the interestPeriodDays, rounded to roundingDecimalPoints. </br>. (dot) is the only character supported for decimal place separator.",
+            "example": 1.0404
+          }
+        }
+      },
+      "SimpleAverageRate": {
+        "title": "SimpleAverageRate",
+        "description": "If showDailyDetails = true, dailyRateSummary displays the simpleAverageRate upto (and including) calculateTillDate, if it is outside the Rate Known Window, or upto (and including) the interestPeriodEndDate otherwise. </br>If showDailyDetails = false, dailyRateSummary displays the simpleAverageRate only for calculateTillDate, if it is outside the Rate Known Window, or only for the last business day for the interest period otherwise.",
+        "type": "object",
+        "properties": {
+          "dailyRateSummary": {
+            "type": "array",
+            "description": "If showDailyDetails = true, dailyRateSummary displays the simpleAverageRate upto (and including) calculateTillDate, if it is outside the Rate Known Window, or upto (and including) the interestPeriodEndDate otherwise. </br>If showDailyDetails = false, dailyRateSummary displays the simpleAverageRate only for calculateTillDate, if it is outside the Rate Known Window, or only for the last business day for the interest period otherwise.",
+            "items": {
+              "$ref": "#/components/schemas/CalculatedSimpleAverageRatesSummary"
+            }
+          },
+          "requestParameters": {
+            "$ref": "#/components/schemas/RateRequestParameter"
+          },
+          "comment": {
+            "title": "Comments",
+            "maxLength": 300,
+            "type": "string",
+            "description": "Captures additional narration for the calculations performed. Currently, it displays the time stamp when the calculation was completed. Format in ISO 8601 is \"Computed time : yyyy-MM-dd'T'HH:mm:ssXXX.\"",
+            "example": "Computed time : 2020-08-20T11:53:07+00:00. Computed time is the time stamp when the calculation was completed."
+          },
+          "lastUpdatedFromSource": {
+            "title": "LastUpdatedFromSource",
+            "type": "string",
+            "description": "The most recent timestamp when the published ARR rate data was consumed by the Calculator from the relevant source (e.g. New York Federal Reserve for SOFR). </br>Format in ISO 8601 is \"yyyy-MM-dd'T'HH:mm:ssXXX\"",
+            "format": "date-time",
+            "example": "2020-08-20T11:53:07+00:00"
+          },
+          "legalDisclaimer": {
+            "title": "Legal Disclaimer",
+            "maxLength": 2000,
+            "type": "string",
+            "description": "The End User Terms for using this Calculator",
+            "example": "Use subject to New York Fed Terms of Use for Select Rate Data.  New York Fed has no liability for your use.  Refer the following link for more details: https://www.newyorkfed.org/markets/reference-rates-terms-of-use"
+          }
+        }
+      },
+      "CalculatedSimpleAverageInterestSummary": {
+        "title": "CalculatedSimpleAverageInterestSummary",
+        "description": "Calculated Simple Average Interest Summary",
+        "type": "object",
+        "properties": {
+          "principalBalance": {
+            "title": "Principal Balance",
+            "type": "number",
+            "format": "double",
+            "description": "Principal balance as on interestPeriodDate. </br>. (dot) is the only character supported for decimal place separator. Cannot have a thousands separator.",
+            "example": 100000
+          },
+          "interestPeriodDate": {
+            "title": "Interest Period Date",
+            "type": "string",
+            "description": "The date in the interest period for which calculated ARR Simple Average Rate is displayed in the output.</br>The date is in ISO 8601 Date Format yyyy-mm-dd.",
+            "format": "date"
+          },
+          "interestPeriodDays": {
+            "title": "Interest Period Days",
+            "type": "integer",
+            "description": "Number of days in the interest period (from and including the interestPeriodStartDate) for which the calculated sSimple Average Rate is applicable",
+            "format": "int32",
+            "example": 1
+          },
+          "observationPeriodDate": {
+            "title": "Observation Period Date",
+            "type": "string",
+            "description": "The date in the observation period for which the published ARR rate (rateApplied) and the corresponding weightage of that rate is used for ARR Average calculation.</br>Populated only if the observationPeriodShift is true </br> Observation Period is defined as commencing 'x' number of business days (lookback days) prior to the start  (first day) of the interest period.</br>The date is in ISO 8601 Date Format yyyy-mm-dd",
+            "format": "date"
+          },
+          "observationPeriodDays": {
+            "title": "Observation Period Days",
+            "type": "integer",
+            "description": "Number of days in the observation period (from and including the start of Observation Period).</br>Populated only if the observationPeriodShift is true",
+            "format": "int32",
+            "example": 1
+          },
+          "publishedRiskFreeRate": {
+            "title": "Published Risk Free rate",
+            "type": "number",
+            "format": "double",
+            "description": "The published ARR rate applied for the interestPeriodDate (if observationPeriodShift = false) or observationPeriodDate (if observationPeriodShift = true).",
+            "example": 1.04085026
+          },
+          "rateApplied": {
+            "title": "RateApplied",
+            "type": "number",
+            "format": "double",
+            "description": "The ARR Rate applied, after factoring in the riskFreeRateFloor value, for the interestPeriodDate. If the published risk-free rate is lower than the floor value, rateApplied = riskFreeRateFloor. Otherwise, rateApplied = publishedRiskFreeRate.",
+            "example": 1.04085026
+          },
+          "riskFreeRateFloorApplied": {
+            "title": "Risk Free Rate Floor Applied",
+            "type": "boolean",
+            "description": "Indicates whether the rateApplied has factored the riskFreeRateFloor value, for the interestPeriodDate (Value = true) or not (Value = false).",
+            "default": false
+          },
+          "allInRateFloorApplied": {
+            "title": "All in Rate Floor Applied",
+            "type": "boolean",
+            "description": "Indicates whether the allInRate has factored the allInRateFloor value, for the interestPeriodDate (Value = true) or not (Value = false).",
+            "default": false
+          },
+          "allInRateCapApplied": {
+            "title": "All in Rate Cap Applied",
+            "type": "boolean",
+            "description": "Indicates whether the allInRate has factored the allInRateCap value, for the interestPeriodDate (Value = true) or not (Value = false).",
+            "default": false
+          },
+          "calculatedAllInRate": {
+            "title": "All in rate",
+            "type": "number",
+            "format": "double",
+            "description": "The calculated All-in Rate before applying the All in Rate Cap or Floor. Equals sum of simpleAverageRate, spread, and spreadAdjustment, rounded to roundingDecimalPoints. </br>. (dot) is the only character supported for decimal place separator.",
+            "example": 2.19
+          },
+          "allInRate": {
+            "title": "All in rate",
+            "type": "number",
+            "format": "double",
+            "description": "The All-in Rate applied, after factoring in the allInRateFloor or allInRateCap value, to the calculatedAllInRate Value, based on the following criteria, rounded to rateRoundingDecimalPoints. This field is used for accrued interest computation.</br> If the calculatedAllInRate is lower than the allInRateFloor value, rateApplied = allInRateFloor.</br> If the calculatedAllInRate is greater than the allInRateCap value, rateApplied = allInRateCap.</br> Otherwise, allInRate = calculatedAllIinRate.</br>",
+            "example": 2.19
+          },
+          "cummulativeInterestAmount": {
+            "title": "Cumulative Interest Amount",
+            "type": "number",
+            "format": "double",
+            "description": "Calculated cumulative interest accrued amount for the interestPeriodDays.</br>Rate Basis used for interest computation is as per DayCountConvention. </br>. (dot) is the only character supported for decimal place separator. Cannot have a thousands separator."
+          },
+          "simpleAverageRate": {
+            "title": "Simple Average Rate",
+            "type": "number",
+            "format": "double",
+            "description": "The calculated Simple Average Rate, applicable for the interestPeriodDays, rounded to roundingDecimalPoints. </br>. (dot) is the only character supported for decimal place separator.",
+            "example": 1.00023
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "Oauth2": {
+        "type": "oauth2",
+        "description": "Oauth 2.0",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://api.lobdev.fusionfabric.cloud/login/v1/sandbox/oidc/token",
+            "scopes": {}
+          }
+        }
+      }
+    }
+  },
+  "security": [
+    {
+      "Oauth2": []
+    }
+  ]
+}
