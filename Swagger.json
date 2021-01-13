@@ -54,7 +54,7 @@
         ],
         "summary": "Retrieve a Summary of Accounts for an Account Holder",
         "operationId": "accounts",
-        "description": "This call returns a summary of all accounts owned by an account holder.",
+        "description": "This call returns a summary of all acounts owned by an account holder.",
         "produces": [
           "application/json"
         ],
