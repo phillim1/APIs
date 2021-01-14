@@ -18,19 +18,7 @@
     ],
     "x-finastra-icon": "Icons_11n.svg"
   },
-  "securityDefinitions": {
-    "Oauth2": {
-      "type": "oauth2",
-      "description": "Oauth 2.0 authentication",
-      "tokenUrl": "https://any.local.keycloak:8443/login/v1/sandbox/auth",
-      "flow": "application"
-    }
-  },
-  "security": [
-    {
-      "Oauth2": []
-    }
-  ],
+  "securityDefinitions": {},
   "tags": [
     {
       "name": "Issuances",
