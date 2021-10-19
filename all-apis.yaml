@@ -5,5 +5,5 @@ metadata:
   description: A collection of all Backstage example APIs
 spec:
   targets:
-    - /new-openapi.yaml
-    - /old-openapi.yaml
+    - ./new-openapi.yaml
+    - ./old-openapi.yaml
