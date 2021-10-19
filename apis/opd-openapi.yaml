@@ -1,0 +1,816 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: old-openapi
+  description: Booking
+spec:
+  type: openapi
+  lifecycle: deprecated
+  owner: team-c
+  definition: |
+openapi: 3.0.1
+info:
+  title: Booking Module
+  description: "Fusion Loan IQ Booking Module Service. API endpoints to \
+    \  book Deal, Facility and Outstandings into Fusion Loan IQ. API endpoints\
+    \ need a valid JWT token to be passed in the Authorization Http header. Department\
+    \ and branch security is enforced on all requests. The token bearer should have\
+    \ access to the respective department and branch in Fusion Loan IQ."
+  version: 1.0.0
+  x-finastra-audience: PUBLIC
+  x-finastra-category: Corporate Banking
+  x-finastra-channel-type: B2E
+  x-finastra-implementability: INTERNAL
+  x-finastra-maturity-level: DRAFT
+  x-finastra-short-description: Facilitates onboarding of credit agreement
+  x-finastra-subcategory: Corporate and Syndicated Lending
+  x-finastra-tags:
+  - Fusion Loan IQ
+paths:
+  /credit-agreement-bookings:
+    post:
+      tags:
+      - CreditAgreement
+      summary: Create a Credit Agreement
+      description: Creates a new credit agreement in the system.
+      operationId: create-credit-agreement
+      parameters:
+      - name: Idempotency-Key
+        in: header
+        description: Idempotency Key
+        required: true
+        schema:
+          maxLength: 50
+          type: string
+          description: Idempotency key will be valid for 24 hours.
+          default: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditAgreement'
+        required: true
+      responses:
+        "201":
+          description: Created
+          headers:
+            Location:
+              schema:
+                type: string
+                description: The location of the created credit agreement
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditAgreementResponse'
+        "400":
+          description: Invalid input provided or bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "403":
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Resource not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /credit-agreement-bookings/{bookingId}:
+    get:
+      tags:
+      - CreditAgreement
+      summary: Retrieve a single credit agreement
+      description: Retrieves a single credit agreement
+      operationId: retrieve-single-credit-agreement
+      parameters:
+      - name: bookingId
+        in: path
+        description: A unique credit agreement identifier
+        required: true
+        schema:
+          maxLength: 24
+          type: string
+          description: A unique credit agreement identifier
+      responses:
+        "200":
+          description: OK
+          headers:
+            ETag:
+              schema:
+                maxLength: 50
+                type: string
+                description: Uniquely identifies the version of this credit agreement
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/CreditAgreement'
+        "400":
+          description: Invalid input provided or bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    put:
+      tags:
+      - CreditAgreement
+      summary: Update Credit Agreement
+      description: Updates a single credit agreement
+      operationId: update-credit-agreement
+      parameters:
+      - name: If-Match
+        in: header
+        description: Contains an Etag value for updates
+        required: true
+        schema:
+          maxLength: 50
+          type: string
+          description: For updates this header needs to be present and contain an
+            ETag value
+          default: ""
+      - name: bookingId
+        in: path
+        description: A unique credit agreement identifier
+        required: true
+        schema:
+          maxLength: 24
+          type: string
+          description: A unique credit agreement identifier
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreditAgreement'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreditAgreementResponse'
+        "400":
+          description: Invalid input provided or bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "412":
+          description: Precondition failed - version provided in the If-Match header
+            is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "428":
+          description: Precondition required - version to be provided in the If-Match
+            header
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+      - CreditAgreement
+      summary: Delete a credit agreement
+      description: Deletes a credit agreement
+      operationId: delete-credit-agreement
+      parameters:
+      - name: If-Match
+        in: header
+        description: Contains an Etag value for updates
+        required: true
+        schema:
+          maxLength: 50
+          type: string
+          description: For updates this header needs to be present and contain an
+            ETag value
+          default: ""
+      - name: bookingId
+        in: path
+        description: A unique credit agreement identifier
+        required: true
+        schema:
+          maxLength: 24
+          type: string
+          description: A unique credit agreement identifier
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Invalid input provided or bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "404":
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "412":
+          description: Precondition failed - version provided in the If-Match header
+            is invalid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "428":
+          description: Precondition required - version to be provided in the If-Match
+            header
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        "500":
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    ErrorDetailsResponse:
+      title: ErrorDetailsResponse
+      type: object
+      properties:
+        field:
+          maxLength: 20
+          type: string
+          description: Field where error occurs
+        fieldValue:
+          maxLength: 150
+          type: string
+          description: A value which gives insight of the problem
+        title:
+          maxLength: 20
+          type: string
+          description: "A short, readable summary of the problem"
+      description: An error response including additional details of the error
+    ErrorResponse:
+      title: ErrorResponse
+      required:
+      - status
+      - title
+      type: object
+      properties:
+        causes:
+          type: array
+          description: Additional detail on error message
+          items:
+            $ref: '#/components/schemas/ErrorDetailsResponse'
+        detail:
+          maxLength: 256
+          type: string
+          description: An explanation specific to this occurrence of the problem
+          example: "[branch must not be null.]"
+        status:
+          type: integer
+          description: The Http response status code generated by the origin server
+          format: int32
+          example: 400
+        title:
+          maxLength: 256
+          type: string
+          description: "A short, readable summary of the problem type"
+          example: The request is invalid
+        type:
+          maxLength: 256
+          type: string
+          description: A URI reference that identifies the problem type
+          example: https://api.finastra.com/validation-error
+      description: An error response including useful details
+    CreditAgreement:
+      title: CreditAgreement
+      description: A package boarding request representation
+      type: object
+      required:
+      - dealTrackingNumber
+      - creditDocumentationStatus
+      - branch
+      - primaryBorrower
+      - processingArea
+      properties:
+          dealTrackingNumber:
+            maxLength: 12
+            minLength: 1
+            type: string
+            description: A unique identifier sent by LOS.
+            example: EC9P17P
+          creditAgreementName:
+            maxLength: 40
+            type: string
+            description: Describe the deal naming convention as per the Credit Agreement. Concatenation of primary borrower first name and CA ID.
+            example: Smith Foods Credit Agreement 1
+          branch:
+            maxLength: 70
+            minLength: 1
+            type: string
+            description: The Top Level Bank Organizational Structure. A branch must be specified in order to create a new deal.
+            example: "00002"
+          department:
+            maxLength: 70
+            type: string
+            description: The owning department of the customer.
+            example: FRONL
+          processingArea:
+            maxLength: 70
+            minLength: 1
+            type: string
+            description: A processing must be specified in order to create a new deal.
+            example: Commercial Loan Americas
+          dealClassification:
+            maxLength: 140
+            type: string
+            description: Deal classification describes for what purpose the borrower wants to avail the loan.
+            example: General Corp Purpose
+          interestPricingRules:
+            maxLength: 140
+            type: string
+            description: Multiple Pricing options that have been defined in the Credit Agreement for the various facility/ outstandings.
+            example: Libor
+          feePricingRules:
+            maxLength: 70
+            type: string
+            description: Multiple Fee pricing options that have been defined in the Credit Agreement for the various facility/outstandings.
+            example: Unutilized fees
+          agreementDate:
+            type: string
+            description: Date of the Credit Agreement governing the deal. The date is in ISO 8601 Date Format yyyy-mm-dd. It cannot be a future date. Must be earlier than or equal to Projected Close Date
+            format: date
+            example: '1999-01-01'
+          creditDocumentationStatus:
+            maxLength: 40
+            minLength: 1
+            type: string
+            description: The status will Trigger the closure of deal/final booking. Allowed values -"In Progress" or "Completed".
+            example: In Progress
+          targetFundingDate:
+            type: string
+            description: Target date by which the funding should happen in the deal. The date is in ISO 8601 Date Format yyyy-mm-dd.
+            format: date
+            example: '1999-01-01'
+          currency:
+            maxLength: 3
+            type: string
+            description: The unique ISO 4217 currency code for the credit agreement currency.
+            example: USD
+          proposedCommitmentAmount:
+            type: number
+            description: Global deal commitment amount requested by the borrower prior to the deal close. Accepts up to 25 integer number and 3 decimal points.
+            format: double
+            example: 1000000.00
+          relationshipManagerName:
+            maxLength: 140
+            type: string
+            description: The relationship manager's full name to be created and updated in Loan IQ.
+            example: John Smith
+          primaryBorrower:
+            maxLength: 140
+            minLength: 1
+            type: string
+            description: Legal name of the primary borrower of the credit agreement.
+            example: ABC Corp
+          bookingId:
+            maxLength: 24
+            type: string
+            readOnly: true
+            description: A unique identifier generated when request is sent
+              to Booking Module. This is a generated attribute and need not be provided
+              by the Loan Origination System
+          borrowers:
+            minItems: 1
+            type: array
+            description: The deal borrowers for this deal
+            items:
+              $ref: '#/components/schemas/DealBorrower'
+          facilities:
+            minItems: 1
+            type: array
+            description: The facilities under this deal
+            items:
+              $ref: '#/components/schemas/Facility'
+          pricingOptions:
+            minItems: 1
+            type: array
+            description: The pricing options for this deal.
+            items:
+              $ref: '#/components/schemas/DealPricing'
+          originationPrimaries:
+            minItems: 0
+            type: array
+            description: The deal origination primaries.
+            items:
+              $ref: '#/components/schemas/OriginationPrimaries'
+    CreditAgreementResponse:
+      title: CreditAgreementResponse
+      required:
+      - bookingId
+      - creditDocumentationStatus
+      type: object
+      properties:
+        bookingId:
+          maxLength: 24
+          type: string
+          readOnly: true
+          description: A unique identifier generated when request is sent
+            to Booking Module. This is a generated attribute.
+          example: "10024"
+        creditDocumentationStatus:
+          maxLength: 40
+          minLength: 1
+          type: string
+          readOnly: true
+          description: The status will Trigger the closure of deal/final booking. Allowed values -"In Progress" or "Completed".
+          example: In Progress
+      description: A representation of the credit agreement response
+    DealBorrower:
+      title: DealBorrower
+      type: object
+      properties:
+        cifNumber:
+          maxLength: 15
+          type: string
+          description: The unique CIF number that identifies the borrower. This customer
+            with a borrower profile must exist in Fusion Loan IQ.
+          example: CUST100123
+      description: A deal borrower representation
+    DealPricing:
+      title: DealPricing
+      type: object
+      properties:
+        currency:
+          maxLength: 3
+          type: string
+          description: The unique ISO 4217 currency code for the deal pricing currency.
+          example: USD
+        option:
+          maxLength: 70
+          type: string
+          description: The pricing option.
+          example: Libor
+      description: A deal pricing option representation
+    OriginationPrimaries:
+      title: OriginationPrimaries
+      type: object
+      properties:
+        lenderName:
+          maxLength: 140
+          type: string
+          description:  A host bank as a origination primary needs to be defined prior to the deal close.
+          example: HB Americas
+        sellAmount:
+          type: number
+          description: Host bank shares needs to defined for each facility. Accepts up to 25 integer number and 3 decimal points.
+          format: double
+          example: 1000000.00
+      description: A deal origination primary representation
+    Facility:
+      title: Facility
+      type: object
+      properties:
+        agreementDate:
+          type: string
+          description: The date of a Credit Agreement governing the deal.
+            The date is in ISO 8601 Date Format yyyy-mm-dd. It cannot be a future
+            date and must precede Facility Effective Date
+          format: date
+          example: '1999-01-01'
+        currency:
+          maxLength: 3
+          type: string
+          description: The unique ISO 4217 currency code for the facility currency.
+          example: USD
+        effectiveDate:
+          type: string
+          description: "The effective date of the facility (prior to which no loans\
+            \ or fees can be released). The date is in ISO 8601 Date Format yyyy-mm-dd.\
+            \ It cannot be earlier than Facility Agreement Date, cannot be later than\
+            \ the Facility Expiry Date and must be earlier than Facility Maturity\
+            \ Date"
+          format: date
+          example: '1999-01-01'
+        expiryDate:
+          type: string
+          description: The facility expiry date (after which no new loans or increases
+            can be released). The date is in ISO 8601 Date Format yyyy-mm-dd. It cannot
+            be earlier than the Facility Effective Date and cannot be later than the
+            Facility Maturity Date
+          format: date
+          example: '1999-01-01'
+        facilityName:
+          maxLength: 70
+          type: string
+          description: The name of this facility. It must be unique within the parent
+            deal
+          example: Smith Foods Term 5
+        facilityType:
+          maxLength: 70
+          type: string
+          description: Describes the type of the facility.
+          example: Revolver
+        finalMaturityDate:
+          type: string
+          description: The facility final maturity date (after which no new fees can
+            be released and all interest and fees due from the borrower(s) must be
+            paid in full). The date is in ISO 8601 Date Format yyyy-mm-dd. It must
+            be later than the Facility Effective Date and cannot be earlier than the
+            Facility Expiry Date. This is the end of the facility's term.
+          format: date
+          example: '1999-01-01'
+        borrowerLegalName:
+          maxLength: 140
+          type: string
+          description: Legal name of all the borrower's of the facility. Should accept multiple values from LOS.
+          example: ABC Corporation
+        modifyInterestPricingOption:
+          maxLength: 70
+          type: string
+          description: Multiple Pricing options that have been defined in the Credit Agreement for the various facility/ outstandings.
+          example: Libor
+        outstandings:
+          minItems: 0
+          type: array
+          description: The facility outstandings
+          items:
+            $ref: '#/components/schemas/Outstanding'
+        interestPricings:
+          minItems: 0
+          type: array
+          description: The facility interest pricing options
+          items:
+            $ref: '#/components/schemas/FacilityInterestPricing'
+        feePricings:
+          minItems: 0
+          type: array
+          description: The facility fee pricing options
+          items:
+            $ref: '#/components/schemas/FacilityFeePricing'
+        proposedCommitmentAmount:
+          type: number
+          description: The global facility proposed commitment (the amount requested
+            by the borrower from the syndicate prior to closing the deal). Aggregate
+            of proposed commitment amounts for all facilities in a deal must equal
+            global deal proposed commitment when host bank deal is closed. Accepts up to 25 integer number and 3 decimal points.
+          format: double
+          example: 1000000
+        loanPurposeTypes:
+          type: array
+          description: The loan purposes associated with the facility
+          items:
+            $ref: '#/components/schemas/FacilityPurpose'
+        riskTypes:
+          minItems: 0
+          type: array
+          description: The supported risk types
+          items:
+            $ref: '#/components/schemas/FacilityRiskType'
+        supportedCurrencies:
+          minItems: 0
+          type: array
+          description: The facility supported currencies
+          items:
+            $ref: '#/components/schemas/FacilityCurrency'
+      description: A facility representation
+    FacilityCurrency:
+      title: FacilityCurrency
+      type: object
+      properties:
+        currency:
+          maxLength: 3
+          type: string
+          description: The unique ISO 4217 currency code for the facility currency.
+          example: USD
+      description: The facility conversion details for multiple currencies
+    FacilityInterestPricing:
+      title: FacilityInterestPricing
+      type: object
+      properties:
+        baseRate:
+          maxLength: 70
+          type: string
+          description: Describes the facility base rate.
+          example: "0.00125"
+        option:
+          maxLength: 70
+          type: string
+          description: 'The pricing option of the facility '
+          example: LIBOR
+        rateBasis:
+          maxLength: 70
+          type: string
+          description: The rate basis to be used for interest accrual calculations.
+          example: Actual/360
+        spread:
+          type: number
+          description: "The spread to be applied to the facility base rates. If not\
+            \ specified, defaults to zero. If specified, must be expressed as decimal\
+            \ (not as a percentage, and not in basis points). For example, if the\
+            \ spread is 1% (100 BP), a value of .01 should be passed. Decimal value\
+            \ can be either positive or negative. Accepts up to 1 integer number and 14 decimal points."
+          format: double
+          example: 0.5
+      description: A facility pricing option representation
+    FacilityFeePricing:
+      title: FacilityPricing
+      type: object
+      properties:
+        option:
+          maxLength: 70
+          type: string
+          description: 'The fee pricing option of the facility '
+          example: Unutilized fees
+        feeRate:
+          type: number
+          description: Describes the fee rate for the facility. Accepts up to 1 integer number and 14 decimal points.
+          format: double
+          example: 0.5
+        rateBasis:
+          maxLength: 70
+          type: string
+          description: The rate basis to be used for interest accrual calculations.
+          example: Actual/360
+      description: A facility pricing option representation
+    FacilityPurpose:
+      title: FacilityPurpose
+      type: object
+      properties:
+        loanPurposeType:
+          maxLength: 120
+          type: string
+          description: Describing the purpose of the facility.
+          example: General Corp Purpose
+      description: A facility purpose representation
+    FacilityRiskType:
+      title: FacilityRiskType
+      type: object
+      properties:
+        riskType:
+          maxLength: 70
+          type: string
+          description: 'Describes the facility risk type. '
+          example: loans
+      description: A facility risk type representation
+    Outstanding:
+      title: Outstanding
+      type: object
+      properties:
+        requestedAmount:
+          type: number
+          description: The requested amount of the drawdown. Accepts up to 25 integer number and 3 decimal points.
+          format: double
+          example: 1000000.001
+        baseRate:
+          type: number
+          description: "The borrower base rate to be applied to the Outstanding, expressed\
+            \ as a percentage. Applies to Fixed Rate loans only. Should be null if\
+            \ the Pricing Option indicates 'Borrower Rate is Floating' For example,\
+            \ if the baseRate is 1% (100 BP), a value of .01 should be passed. Decimal\
+            \ value can be either positive or negative. Accepts up to 2 integer number and 8 decimal points."
+          format: double
+          example: 0.05
+        beneficiaries:
+          maxLength: 140
+          type: string
+          description: Name of a customer who is the beneficiary of the SBLC outstanding.
+          example: John Smith
+        borrowerName:
+          maxLength: 140
+          type: string
+          description: Borrower of the outstanding.
+          example: John Smith
+        currency:
+          maxLength: 3
+          type: string
+          description: The unique ISO 4217 currency code for the outstanding currency. Defaults to the currency associated with the Facility or any other currency listed in the CA that the borrower wants to withdraw.
+          example: USD
+        effectiveDate:
+          type: string
+          description: "The effective date of the drawdown. The date is in ISO 8601\
+            \ Date Format yyyy-mm-dd. Outstanding Effective Date cannot be prior to\
+            \ Facility Effective Date and must be less than Outstanding Repricing\
+            \ Date and Outstanding Maturity Date, if specified"
+          format: date
+          example: '1999-01-01'
+        expiryDate:
+          type: string
+          description: Indicates when the SBLC outstanding expires or could be default to the facility expiry date. The date is in ISO 8601 Date Format yyyy-mm-dd.
+          format: date
+          example: '1999-01-01'
+        issuingBankShares:
+          type: number
+          description: Host bank or any customer defined in the credit agreement with a lender profile for SBLC. Accepts up to 25 integer number and 3 decimal points.
+          format: double
+          example: 2000000.00
+        feeOnIssuingBankShares:
+          type: number
+          description: Where the host bank or any other lender holds the postion of the SBLC and a fee charged towards the same.
+          format: double
+          example: 0.00125
+        feeOnLenderShares:
+          type: number
+          description: Where the host bank or any other lender holds the postion of the SBLC and a fee charged towards the same.
+          format: double
+          example: 0.00125
+        outstandingType:
+          maxLength: 5
+          type: string
+          description: A code that describes the type of the outstanding.
+          example: SBLC
+        pricingOption:
+          maxLength: 70
+          type: string
+          description: The pricing option on the loan. SBLC needs to be passed in for SBLC type outstanding.
+          example: LIBOR
+        purpose:
+          maxLength: 120
+          type: string
+          description: Purpose for borrowing a loan by the borrower.
+          example: General Corp Purpose
+        repricingFrequency:
+          maxLength: 70
+          type: string
+          description: The repricing frequency of this drawdown
+          example: Monthly
+        riskType:
+          maxLength: 70
+          type: string
+          description: Risk type defines the outstanding type the borrower wants avail.
+          example: Loan
+        spread:
+          type: number
+          description: "The spread to be applied to the base rates during drawdown\
+            \ expressed as a percentage. For example, if the spread is 1% (100 BP),\
+            \ a value of .01 should be passed. Decimal value can be either positive\
+            \ or negative. Accepts up to 1 integer number and 8 decimal points."
+          format: double
+          example: 0.01
+      description: An outstanding representation
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      description: Oauth 2.0
+      flows:
+        authorizationCode:
+          scopes: {}
+          authorizationUrl: https://api.fusionfabric.cloud/login/v1/sandbox/oidc/authorize
+          tokenUrl: https://api.fusionfabric.cloud/login/v1/sandbox/oidc/token
