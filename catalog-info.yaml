@@ -1,10 +1,13 @@
 apiVersion: backstage.io/v1alpha1
-kind: Component
+kind: API
 metadata:
-  name: APIs
+  name: Marts APIs
+  description: marts
   annotations:
     github.com/project-slug: phillim1/APIs
 spec:
-  type: other
-  lifecycle: unknown
+  type: openapi
+  lifecycle: development
   owner: backstage
+  system: marts-apis
+  definition: https://github.com/phillim1/APIs/blob/master/Swagger.json
