@@ -4,6 +4,10 @@ metadata:
   name: APIs
   annotations:
     github.com/project-slug: phillim1/APIs
+  links:
+    - url: https://dashboard.example.com
+      title: Marts Dashboard
+      icon: dashboard
 spec:
   type: other
   lifecycle: unknown
