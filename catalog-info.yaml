@@ -5,9 +5,7 @@ metadata:
   annotations:
     github.com/project-slug: phillim1/APIs
   links:
-    - url: https://dashboard.example.com
-      title: Marts Dashboard
-      icon: dashboard
+    - url: https://confluence.finastra.com/display/ARPP/FusionOperate+Catalog+Portal+Requirements
 spec:
   type: other
   lifecycle: unknown
