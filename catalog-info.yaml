@@ -1,7 +1,7 @@
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
-  name: Marts APIs
+  name: Marts-APIs
   description: marts
 spec:
   type: openapi
