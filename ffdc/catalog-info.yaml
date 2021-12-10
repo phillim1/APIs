@@ -1,7 +1,7 @@
 apiVersion: backstage.io/v1alpha1
 kind: API
 metadata:
-  name: ffdc app management
+  name: ffdc-app-management
   description: FFDC app management
   labels:
     example.com/custom: custom_label_value
