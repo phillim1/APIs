@@ -1,34 +1,21 @@
-apiVersion: backstage.io/v1beta2
-kind: Template
+apiVersion: backstage.io/v1alpha1
+kind: Component
 metadata:
-  name: v1beta2-demo
-  title: fo java chassis
-  description: FO java chassis
+  name: fo-java-chassis
+  description: FusionOperate Java Chassis
+  labels:
+    example.com/custom: custom_label_value
+  annotations:
+    example.com/service-discovery: fo-chassis
+    circleci.com/project-slug: 
+  tags:
+    - java
+  links:
+    - url: https://fusionfabric.visualstudio.com/FusionOperate/_git/chassis-helloworld
+      title: Chassis location
+      icon: dashboard
 spec:
+  type: website
+  lifecycle: production
   owner: team-a
-  type: service
-
-  # these are the steps which are rendered in the frontend with the form input
-  parameters:
-    - title: Steps to onboard
-      required:
-        - name
-      properties:
-        name:
-          title: Name
-          type: string
-          description: Unique name of the component
-          ui:autofocus: true
-          ui:options:
-            rows: 5
-    - title: Choose a location
-      required:
-        - repoUrl
-      properties:
-        repoUrl:
-          title: Repository Location
-          type: string
-          ui:field: RepoUrlPicker
-          ui:options:
-            allowedHosts:
-              - github.com
+  system: public-websites
