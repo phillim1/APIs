@@ -1,10 +1,10 @@
-apiVersion: backstage.io/v1alpha1
+apiVersion: v1
 kind: Component
 metadata:
-  name: mp-artist-web
-  description: MP The place to be, for great artists
+  name: fo-component
+  description: FusionOperate Component
   labels:
-    example.com/custom: custom_label_value
+    example.com/custom: fo
   annotations:
     example.com/service-discovery: artistweb
     circleci.com/project-slug: github/example-org/artist-website
@@ -17,5 +17,5 @@ metadata:
 spec:
   type: website
   lifecycle: production
-  owner: artist-relations-team
+  owner: team-a
   system: public-websites
