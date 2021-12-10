@@ -1,0 +1,21 @@
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: ffdc app management
+  description: FFDC app management
+  labels:
+    example.com/custom: custom_label_value
+  annotations:
+    example.com/service-discovery: artistweb
+    circleci.com/project-slug: github/example-org/artist-website
+  tags:
+    - java
+  links:
+    - url: https://confluence.finastra.com/display/ARPP/FusionOperate+Catalog+Portal+Requirements
+      title: Admin Dashboard
+      icon: dashboard
+spec:
+  type: service
+  lifecycle: production
+  owner: team-a
+  system: public-websites
