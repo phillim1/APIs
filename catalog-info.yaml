@@ -4,7 +4,7 @@ metadata:
   name: fo-component
   description: FusionOperate Component
   labels:
-    example.com/custom: fo
+    example.com/custom: custom_label_value
   annotations:
     example.com/service-discovery: artistweb
     circleci.com/project-slug: github/example-org/artist-website
