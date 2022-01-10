@@ -1,97 +1,1423 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "Loan Status Events",
-    "description": "This API supports the status of activities revolving around the loan origination process to be displayed to the borrower outside of Fusion Mortgagebot.",
+    "title": "Fusion Originate Loans/Deposits for Consumer",
+    "description": "Endpoints enabling service providers to originate consumer loan account(s) or deposit account(s) in Fusion Originate Consumer",
     "version": "1.0.0",
+    "x-finastra-category": "Lending",
+    "x-finastra-subcategory": "Loan Origination",
+    "x-finastra-short-description": "Fusion Originate Consumer Loans/Deposits",
+    "x-finastra-tags": [
+      "Fusion Originate Consumer Deposits",
+      "North America"
+    ],
     "x-finastra-channel-type": "B2B",
-    "x-finastra-short-description": "Loan Status Events"
+    "x-finastra-maturity-level": "BETA",
+    "x-finastra-audience": "PUBLIC",
+    "x-finastra-implementability": "INTERNAL",
+    "x-finastra-icon": "Icons_9s.svg"
   },
-  "servers": [
+  "security": [
     {
-      "url": "/"
+      "Oauth2": []
     }
   ],
   "paths": {
-    "/status-changed": {
+    "/branches": {
+      "get": {
+        "tags": [
+          "Branches"
+        ],
+        "summary": "Gets a list of branches",
+        "description": "list of branches\n",
+        "operationId": "getOriginateConsumerBranches",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Branches"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Gets a list of products",
+        "description": "list of products\n",
+        "operationId": "getOriginateConsumerProducts",
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/Products"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/application/{applicationId}/status": {
+      "get": {
+        "tags": [
+          "Application Status"
+        ],
+        "summary": "display various statuses for the application",
+        "description": "Get an application\n",
+        "operationId": "getOriginateConsumerApplicationStatus",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApplicationId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ApplicationStatusResponse"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/application/{applicationId}/validation-initialize": {
       "post": {
-        "summary": "Notification of an action that has changed the status on the account",
-        "description": "Notification of an action that has changed the status on the account",
-        "operationId": "Status-status-changed-Event",
+        "tags": [
+          "Validation"
+        ],
+        "summary": "retrieve IDA questions from vendor",
+        "description": "Get an application\n",
+        "operationId": "postRetrieveOriginateConsumerApplicationValidation",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApplicationId"
+          },
+          {
+            "$ref": "#/components/parameters/Idempotency-Key"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "successfully queued. An event will be raised once the item is processed.  Status can be seen in status"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/application/{applicationId}/validation-questions": {
+      "get": {
+        "tags": [
+          "Validation"
+        ],
+        "summary": "retrieves IDA questions",
+        "description": "Get an application\n",
+        "operationId": "getOriginateConsumerApplicationValidation",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApplicationId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ValidationResponse"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Validation"
+        ],
+        "summary": "processes IDA answers",
+        "description": "Get an application\n",
+        "operationId": "postOriginateConsumerApplicationValidation",
         "requestBody": {
-          "description": "This contains the event details",
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/StatusEvents"
+                "$ref": "#/components/schemas/ValidationQuestionResponse"
               }
             }
-          },
-          "required": true
-        },
-        "responses": {
-          "204": {
-            "description": "No content",
-            "content": {}
           }
         },
-        "x-codegen-request-body-name": "event"
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Idempotency-Key"
+          },
+          {
+            "$ref": "#/components/parameters/ApplicationId"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "successfully queued. An event will be raised once the item is processed.  Status can be seen in status"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/application/{applicationId}": {
+      "get": {
+        "tags": [
+          "Application"
+        ],
+        "summary": "Get an existing application",
+        "description": "Get an application\n",
+        "operationId": "getOriginateConsumerApplication",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApplicationId"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ApplicationResponse"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Application"
+        ],
+        "summary": "Add a new application",
+        "description": "Add a new application\n",
+        "operationId": "putOriginateConsumerApplication",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Application"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApplicationId"
+          },
+          {
+            "$ref": "#/components/parameters/If-Match"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/components/responses/ApplicationResponse"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "412": {
+            "$ref": "#/components/responses/PreconditionFailed"
+          },
+          "428": {
+            "$ref": "#/components/responses/PreconditionRequired"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/application": {
+      "post": {
+        "tags": [
+          "Application"
+        ],
+        "summary": "Add a new application",
+        "description": "Add a new application\n",
+        "operationId": "createOriginateConsumerApplication",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BasicApplication"
+              }
+            }
+          }
+        },
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/Idempotency-Key"
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/components/responses/ApplicationResponse"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/application/{applicationId}/account": {
+      "post": {
+        "tags": [
+          "Account Open"
+        ],
+        "summary": "opens accounts based on product selection",
+        "description": "Get an application\n",
+        "operationId": "getOriginateConsumerOpenAccount",
+        "parameters": [
+          {
+            "$ref": "#/components/parameters/ApplicationId"
+          },
+          {
+            "$ref": "#/components/parameters/Idempotency-Key"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "successfully queued. An event will be raised once the item is processed.  Status can be seen in status"
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
       }
     }
   },
   "components": {
-    "schemas": {
-      "StatusEvents": {
-        "title": "Status Event",
-        "type": "object",
-        "properties": {
-          "tenant": {
-            "maxLength": 255,
-            "type": "string",
-            "description": "Identifier of the tenant",
-            "example": "ABCBank"
-          },
-          "eventId": {
-            "type": "string",
-            "description": "Returns a globally unique identifier for the event.",
-            "format": "uuid",
-            "example": "6e924284-3b85-4591-9868-dd5cde5cddc0"
-          },
-          "timestamp": {
-            "type": "string",
-            "description": "ISO-8601 format. Specifies the date and time when the notification was issued",
-            "format": "date-time"
-          },
-          "applicationId": {
-            "type": "string",
-            "description": "Returns a globally unique identifier for the application.",
-            "format": "uuid",
-            "example": "fa2f5e24-cc89-467e-989c-67fac5cf042e"
-          },
-          "eventType": {
-            "type": "string",
-            "description": "Specifies the type of status change.",
-            "enum": [
-              "AccountOpened",
-              "ValidationQuestionsReady",
-              "ValidationQuestionsReviewed",
-              "StatusChanged"
-            ]
-          },
-          "url": {
-            "maxLength": 300,
-            "type": "string",
-            "description": "Specifies the endpoint where status change details can be reviewed",
-            "example": "/application/fa2f5e24-cc89-467e-989c-67fac5cf042e/status"
-          },
-          "application-url": {
-            "maxLength": 300,
-            "type": "string",
-            "description": "Specifies the endpoint to the application detauls can be reviewed",
-            "example": "/application/fa2f5e24-cc89-467e-989c-67fac5cf042e"
+    "securitySchemes": {
+      "Oauth2": {
+        "description": "Oauth2",
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://any.local.keycloak:8443/login/v1/sandbox/auth",
+            "scopes": {}
+          }
+        }
+      }
+    },
+    "parameters": {
+      "ApplicationId": {
+        "name": "applicationId",
+        "in": "path",
+        "description": "application identification\n",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "ProductId": {
+        "name": "productId",
+        "in": "path",
+        "description": "product identification\n",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid"
+        }
+      },
+      "ApplicantId": {
+        "name": "applicantId",
+        "in": "path",
+        "description": "applicant identification\n",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "format": "uuid",
+          "example": "476464ed-1eba-4808-9f40-e72ee30bcade"
+        }
+      },
+      "Idempotency-Key": {
+        "description": "Idempotency Key header",
+        "name": "Idempotency-Key",
+        "in": "header",
+        "required": true,
+        "schema": {
+          "type": "string",
+          "maxLength": 64,
+          "pattern": "^[a-zA-Z0-9]*$"
+        }
+      },
+      "If-Match": {
+        "description": "If Match header",
+        "required": true,
+        "name": "If-Match",
+        "in": "header",
+        "schema": {
+          "type": "string",
+          "maxLength": 40
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Bad request",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Unauthorized",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Not Found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Conflict": {
+        "description": "Conflict",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "PreconditionFailed": {
+        "description": "Precondition Failed - version provided in the If-Match header is invalid",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "PreconditionRequired": {
+        "description": "Precondition Required",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "ServerError": {
+        "description": "Internal server error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Branches": {
+        "description": "Branches",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Branches"
+            }
+          }
+        }
+      },
+      "ApplicationProducts": {
+        "description": "ApplicationProducts",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApplicationProducts"
+            }
+          }
+        }
+      },
+      "ApplicationProduct": {
+        "description": "Deposit",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApplicationProductResponse"
+            }
+          }
+        }
+      },
+      "Products": {
+        "description": "Products",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Products"
+            }
+          }
+        }
+      },
+      "ApplicationStatusResponse": {
+        "description": "Status",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApplicationStatus"
+            }
+          }
+        }
+      },
+      "Applicant": {
+        "description": "Applicant",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Applicant"
+            }
+          }
+        }
+      },
+      "Applicants": {
+        "description": "Applicants",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Applicants"
+            }
+          }
+        }
+      },
+      "ApplicationResponse": {
+        "headers": {
+          "ETag": {
+            "$ref": "#/components/headers/ETag"
           }
         },
-        "description": "Event"
+        "description": "Application",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ApplicationResponse"
+            }
+          }
+        }
+      },
+      "ValidationQuestionResponse": {
+        "headers": {
+          "ETag": {
+            "$ref": "#/components/headers/ETag"
+          }
+        },
+        "description": "Validation Questions answers",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ValidationQuestionResponse"
+            }
+          }
+        }
+      },
+      "ValidationResponse": {
+        "headers": {
+          "ETag": {
+            "$ref": "#/components/headers/ETag"
+          }
+        },
+        "description": "Validation Response",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/ValidationResponse"
+            }
+          }
+        }
+      }
+    },
+    "headers": {
+      "ETag": {
+        "description": "The resource current version",
+        "schema": {
+          "title": "ETag",
+          "type": "string",
+          "maxLength": 1024
+        }
+      }
+    },
+    "schemas": {
+      "GovernmentIdType": {
+        "title": "GovernmentIdType",
+        "description": "type of government ID",
+        "type": "string",
+        "enum": [
+          "DriverLicense",
+          "StateId",
+          "Passport",
+          "MilitaryId"
+        ]
+      },
+      "NameSuffix": {
+        "title": "NameSuffix",
+        "description": "person's suffix",
+        "type": "string",
+        "enum": [
+          "I",
+          "II",
+          "III",
+          "IV",
+          "Junior",
+          "Senior",
+          "MedicalDoctor",
+          "PhilosophiaeDoctor"
+        ]
+      },
+      "BranchId": {
+        "title": "BranchId",
+        "description": "code/identifier for product",
+        "example": "100",
+        "type": "string",
+        "maxLength": 100
+      },
+      "ApplicationDate": {
+        "title": "ApplicationDate",
+        "description": "Date the application was created",
+        "type": "string",
+        "format": "date"
+      },
+      "TaxIdNumber": {
+        "title": "Tax Identification Number",
+        "description": "Tax identification number of the consumer",
+        "type": "string",
+        "pattern": "^\\d{9}$",
+        "example": "123456789"
+      },
+      "ApplicantId": {
+        "title": "ApplicantId",
+        "description": "identifier of the individual",
+        "type": "string",
+        "format": "uuid",
+        "example": "476464ed-1eba-4808-9f40-e72ee30bcade"
+      },
+      "Branches": {
+        "type": "object",
+        "description": "list of branches.\n",
+        "title": "Branches",
+        "properties": {
+          "branches": {
+            "type": "array",
+            "description": "list of branches",
+            "items": {
+              "$ref": "#/components/schemas/Branch"
+            }
+          }
+        }
+      },
+      "Branch": {
+        "title": "branch",
+        "description": "branch available to user.\n",
+        "type": "object",
+        "properties": {
+          "name": {
+            "description": "description",
+            "example": "Finastra First Financial",
+            "type": "string",
+            "maxLength": 100
+          },
+          "branchId": {
+            "$ref": "#/components/schemas/BranchId"
+          }
+        }
+      },
+      "Applicants": {
+        "type": "object",
+        "description": "list of applicants.\n",
+        "title": "Applicants",
+        "properties": {
+          "applicants": {
+            "type": "array",
+            "description": "list of applicants",
+            "items": {
+              "$ref": "#/components/schemas/Applicant"
+            }
+          }
+        }
+      },
+      "Products": {
+        "type": "object",
+        "description": "list of products.\n",
+        "title": "Products",
+        "properties": {
+          "products": {
+            "type": "array",
+            "description": "list of products",
+            "items": {
+              "$ref": "#/components/schemas/Product"
+            }
+          }
+        }
+      },
+      "Product": {
+        "title": "Product",
+        "description": "product available to user.\n",
+        "type": "object",
+        "properties": {
+          "description": {
+            "description": "description",
+            "example": "Checking account",
+            "type": "string",
+            "maxLength": 100
+          },
+          "productId": {
+            "$ref": "#/components/schemas/ProductId"
+          },
+          "category": {
+            "$ref": "#/components/schemas/CategoryType"
+          },
+          "type": {
+            "$ref": "#/components/schemas/ProductType"
+          }
+        }
+      },
+      "ProductId": {
+        "title": "ProductId",
+        "description": "code/identifier for product",
+        "example": "476464ed-1eba-4808-9f40-e72ee30b",
+        "type": "string",
+        "format": "uuid"
+      },
+      "ProductType": {
+        "title": "ProductType",
+        "description": "Product Type",
+        "enum": [
+          "Deposit",
+          "Loan"
+        ],
+        "type": "string"
+      },
+      "CategoryType": {
+        "title": "CategoryType",
+        "description": "Product category",
+        "enum": [
+          "Checking",
+          "Savings",
+          "CertificateOfDeposit",
+          "MoneyMarket",
+          "CreditCard",
+          "AutoLoan",
+          "HomeEquity",
+          "OnlineBanking",
+          "BillPay",
+          "ElectronicStatement",
+          "AutomaticTellerMachine"
+        ],
+        "type": "string"
+      },
+      "GovernmentId": {
+        "title": "GovernmentId",
+        "description": "GovernmentId",
+        "type": "object",
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/GovernmentIdType"
+          },
+          "identificationNumber": {
+            "description": "ID number",
+            "maxLength": 40,
+            "type": "string"
+          },
+          "issueDate": {
+            "description": "date id was issued",
+            "type": "string",
+            "format": "date"
+          },
+          "expirationDate": {
+            "description": "date id expires",
+            "type": "string",
+            "format": "date"
+          },
+          "country": {
+            "description": "ISO 3166-1 alpha-2 character Country code",
+            "type": "string",
+            "maxLength": 2,
+            "example": "US"
+          },
+          "state": {
+            "description": "State as identified with the standard 2 character code",
+            "type": "string",
+            "maxLength": 2,
+            "minLength": 2,
+            "example": "WI"
+          },
+          "postalCode": {
+            "description": "postal code",
+            "type": "string",
+            "maxLength": 16,
+            "example": "53226"
+          }
+        }
+      },
+      "Address": {
+        "title": "Address",
+        "description": "Address",
+        "type": "object",
+        "properties": {
+          "street": {
+            "description": "number and name of street",
+            "type": "string",
+            "maxLength": 100,
+            "example": "11 test street"
+          },
+          "street2": {
+            "description": "second line of street address, typically the APT number, unit number and other similar data",
+            "type": "string",
+            "maxLength": 100,
+            "example": "apt 1"
+          },
+          "city": {
+            "description": "city",
+            "type": "string",
+            "maxLength": 50,
+            "example": "milwaukee"
+          },
+          "state": {
+            "description": "State as identified with the standard 2 character code",
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2,
+            "example": "WI"
+          },
+          "postalCode": {
+            "description": "postal code",
+            "type": "string",
+            "maxLength": 16,
+            "example": "53226"
+          }
+        }
+      },
+      "IndividualAddress": {
+        "title": "Address",
+        "description": "Address",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Address"
+          }
+        ],
+        "properties": {
+          "addressType": {
+            "description": "type of address",
+            "enum": [
+              "Current",
+              "Mailing",
+              "Property"
+            ],
+            "type": "string"
+          }
+        }
+      },
+      "BasicApplication": {
+        "title": "Application",
+        "description": "Originate application",
+        "type": "object",
+        "properties": {
+          "branchId": {
+            "$ref": "#/components/schemas/BranchId"
+          },
+          "products": {
+            "type": "array",
+            "description": "list of product (deposits or loan)",
+            "items": {
+              "$ref": "#/components/schemas/ApplicationProductResponse"
+            }
+          },
+          "applicants": {
+            "type": "array",
+            "description": "list of applicants",
+            "items": {
+              "$ref": "#/components/schemas/BasicApplicant"
+            }
+          }
+        }
+      },
+      "Application": {
+        "title": "Application",
+        "description": "Originate application",
+        "type": "object",
+        "properties": {
+          "branchId": {
+            "$ref": "#/components/schemas/BranchId"
+          },
+          "products": {
+            "type": "array",
+            "description": "list of loans",
+            "items": {
+              "$ref": "#/components/schemas/ApplicationProductResponse"
+            }
+          },
+          "applicants": {
+            "type": "array",
+            "description": "list of applicants",
+            "items": {
+              "$ref": "#/components/schemas/Applicant"
+            }
+          }
+        }
+      },
+      "InterviewQuestionStatus": {
+        "title": "InterviewQuestionStatus",
+        "description": "Interview Question Status",
+        "enum": [
+          "NotSubmitted",
+          "InProgress",
+          "Verified",
+          "Failed",
+          "Retrieved",
+          "Disabled"
+        ],
+        "type": "string"
+      },
+      "ApplicationStatusType": {
+        "title": "ApplicationStatusType",
+        "description": "Application Status",
+        "enum": [
+          "Approved",
+          "Completed",
+          "Incomplete",
+          "Pending",
+          "Denied"
+        ],
+        "type": "string"
+      },
+      "ValidationQuestionResponse": {
+        "title": "IDA answers",
+        "description": "IDA answers",
+        "type": "object",
+        "properties": {
+          "applicants": {
+            "type": "array",
+            "description": "list of product statuses",
+            "items": {
+              "$ref": "#/components/schemas/ValidationQuestionResponseApplicant"
+            }
+          }
+        }
+      },
+      "ValidationQuestionResponseApplicant": {
+        "title": "Originate application",
+        "description": "Originate application",
+        "type": "object",
+        "properties": {
+          "applicantId": {
+            "$ref": "#/components/schemas/ApplicantId"
+          },
+          "questions": {
+            "type": "array",
+            "description": "list of product statuses",
+            "items": {
+              "$ref": "#/components/schemas/ValidationQuestionResponseApplicantQuestion"
+            }
+          }
+        }
+      },
+      "ValidationQuestionResponseApplicantQuestion": {
+        "title": "Originate application",
+        "description": "Originate application",
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "description": "question Id",
+            "type": "string",
+            "maxLength": 256,
+            "example": "009"
+          },
+          "answer": {
+            "description": "answer to question",
+            "type": "string",
+            "maxLength": 1024,
+            "example": "green"
+          }
+        }
+      },
+      "ValidationResponse": {
+        "title": "IDA questions",
+        "description": "IDA questions",
+        "type": "object",
+        "properties": {
+          "applicants": {
+            "type": "array",
+            "description": "list of product statuses",
+            "items": {
+              "$ref": "#/components/schemas/ValidationResponseApplicant"
+            }
+          }
+        }
+      },
+      "ValidationResponseApplicant": {
+        "title": "Originate application",
+        "description": "Originate application",
+        "type": "object",
+        "properties": {
+          "applicantId": {
+            "$ref": "#/components/schemas/ApplicantId"
+          },
+          "idaStatus": {
+            "$ref": "#/components/schemas/InterviewQuestionStatus"
+          },
+          "questions": {
+            "type": "array",
+            "description": "list of product statuses",
+            "items": {
+              "$ref": "#/components/schemas/ValidationResponseApplicantQuestion"
+            }
+          }
+        }
+      },
+      "ValidationResponseApplicantQuestion": {
+        "title": "Originate application",
+        "description": "Originate application",
+        "type": "object",
+        "properties": {
+          "questionId": {
+            "description": "question Id",
+            "type": "string",
+            "maxLength": 256,
+            "example": "009"
+          },
+          "prompt": {
+            "description": "question prompt",
+            "type": "string",
+            "maxLength": 256,
+            "example": "what is your favorite color"
+          },
+          "answerChoices": {
+            "description": "The list of answers.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 1024,
+              "example": "green"
+            }
+          }
+        }
+      },
+      "ApplicationResponse": {
+        "title": "Originate application",
+        "description": "Originate application",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/Application"
+          }
+        ],
+        "properties": {
+          "applicationId": {
+            "$ref": "#/components/schemas/ApplicationId"
+          },
+          "branchId": {
+            "$ref": "#/components/schemas/BranchId"
+          },
+          "status": {
+            "$ref": "#/components/schemas/ApplicationStatusType"
+          },
+          "applicationDate": {
+            "$ref": "#/components/schemas/ApplicationDate"
+          }
+        }
+      },
+      "ApplicationId": {
+        "title": "ApplicationId",
+        "description": "Application identification",
+        "type": "string",
+        "format": "uuid"
+      },
+      "ApplicationStatus": {
+        "title": "Application status details",
+        "description": "Application status details",
+        "type": "object",
+        "properties": {
+          "products": {
+            "type": "array",
+            "description": "list of product statuses",
+            "items": {
+              "$ref": "#/components/schemas/ConsumerDepositProductStatus"
+            }
+          },
+          "verifications": {
+            "$ref": "#/components/schemas/ConsumerDepositVerificationStatus"
+          }
+        }
+      },
+      "ConsumerDepositVerificationStatus": {
+        "type": "object",
+        "description": "list of deposits.\n",
+        "title": "Products",
+        "properties": {
+          "applicants": {
+            "type": "array",
+            "description": "list of product statuses",
+            "items": {
+              "$ref": "#/components/schemas/ConsumerDepositVerificationApplicantStatus"
+            }
+          }
+        }
+      },
+      "ConsumerDepositProductStatus": {
+        "type": "object",
+        "description": "Product submission status",
+        "title": "Product submission status",
+        "properties": {
+          "status": {
+            "description": "status of product order.",
+            "type": "string",
+            "enum": [
+              "NotSubmitted",
+              "Submitted"
+            ]
+          },
+          "routing": {
+            "description": "US ABA routing number (ABA RTN). This is a string of 9 numerical digits.",
+            "type": "string",
+            "maxLength": 9,
+            "example": "111122223"
+          },
+          "personNumber": {
+            "description": "This object holds the person number for the bank account. This person may have multiple account numbers with an institution",
+            "type": "string",
+            "maxLength": 256,
+            "example": "12341234"
+          },
+          "accountNumber": {
+            "description": "This object holds the account number for the bank account. This may include ibans, bbans as well as local account number formats.",
+            "type": "string",
+            "maxLength": 256,
+            "example": "021000021"
+          }
+        }
+      },
+      "ConsumerDepositVerificationApplicantStatus": {
+        "title": "Product submission status",
+        "description": "Product submission status",
+        "type": "object",
+        "properties": {
+          "applicantId": {
+            "$ref": "#/components/schemas/ApplicantId"
+          },
+          "idvStatus": {
+            "description": "status of idv",
+            "type": "string",
+            "enum": [
+              "NotSubmitted",
+              "InProgress",
+              "Verified",
+              "Failed",
+              "Disabled"
+            ]
+          },
+          "idaStatus": {
+            "$ref": "#/components/schemas/InterviewQuestionStatus"
+          }
+        }
+      },
+      "BasicApplicant": {
+        "title": "Applicant details",
+        "description": "Applicant details",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/IndividualContactInfo"
+          },
+          {
+            "$ref": "#/components/schemas/IndividualName"
+          }
+        ],
+        "properties": {
+          "address": {
+            "$ref": "#/components/schemas/IndividualAddresses"
+          },
+          "tin": {
+            "$ref": "#/components/schemas/TaxIdNumber"
+          },
+          "employments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Employment"
+            },
+            "minItems": 1,
+            "maxItems": 1
+          },
+          "dateOfBirth": {
+            "description": "Date of birth for the individual",
+            "type": "string",
+            "format": "date"
+          },
+          "countryOfCitizenship": {
+            "description": "ISO 3166-1 alpha-2 character Country code for country of citizenship",
+            "type": "string",
+            "maxLength": 2,
+            "example": "US"
+          },
+          "governmentId": {
+            "$ref": "#/components/schemas/GovernmentId"
+          }
+        }
+      },
+      "Applicant": {
+        "title": "Applicant details",
+        "description": "Applicant details",
+        "type": "object",
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/BasicApplicant"
+          }
+        ],
+        "properties": {
+          "applicantId": {
+            "$ref": "#/components/schemas/ApplicantId"
+          }
+        }
+      },
+      "Employment": {
+        "title": "Employment",
+        "description": "Employment",
+        "type": "object",
+        "properties": {
+          "status": {
+            "description": "employment status",
+            "type": "string",
+            "enum": [
+              "Employed",
+              "Military",
+              "Retired",
+              "SelfEmployed",
+              "Unemployed"
+            ]
+          },
+          "occupation": {
+            "description": "occupation or previous occupation if retired/unemployed",
+            "example": "software engineer",
+            "type": "string",
+            "maxLength": 50
+          },
+          "employerName": {
+            "description": "name of employer",
+            "example": "Finastra",
+            "type": "string",
+            "maxLength": 40
+          },
+          "address": {
+            "$ref": "#/components/schemas/Address"
+          },
+          "phone": {
+            "description": "Phone number",
+            "example": "8005555555",
+            "type": "string",
+            "maxLength": 10,
+            "pattern": "\\d{10}"
+          }
+        }
+      },
+      "IndividualContactInfo": {
+        "title": "Contact info",
+        "description": "Contact info",
+        "type": "object",
+        "properties": {
+          "phone": {
+            "description": "Phone number",
+            "example": "8005555555",
+            "type": "string",
+            "maxLength": 10,
+            "pattern": "\\d{10}"
+          },
+          "email": {
+            "description": "Email address",
+            "example": "bob.work@test.com",
+            "type": "string",
+            "maxLength": 255
+          }
+        }
+      },
+      "IndividualName": {
+        "title": "Name details for an individual",
+        "description": "Individual details",
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "description": "First name of individual",
+            "type": "string",
+            "maxLength": 40,
+            "example": "Bob"
+          },
+          "lastName": {
+            "description": "Last name of individual",
+            "type": "string",
+            "maxLength": 40,
+            "example": "Barker"
+          },
+          "suffix": {
+            "$ref": "#/components/schemas/NameSuffix"
+          }
+        }
+      },
+      "ApplicationProducts": {
+        "type": "object",
+        "description": "list of deposits.\n",
+        "title": "Products",
+        "properties": {
+          "products": {
+            "type": "array",
+            "description": "list of products",
+            "items": {
+              "$ref": "#/components/schemas/ApplicationProductResponse"
+            }
+          }
+        }
+      },
+      "ApplicationProductResponse": {
+        "title": "DepositResponse",
+        "description": "Deposit product details",
+        "type": "object",
+        "properties": {
+          "productId": {
+            "$ref": "#/components/schemas/ProductId"
+          }
+        }
+      },
+      "IndividualAddresses": {
+        "title": "Addresses",
+        "description": "List of addresses",
+        "type": "object",
+        "properties": {
+          "addresses": {
+            "type": "array",
+            "description": "List of addresses",
+            "items": {
+              "$ref": "#/components/schemas/IndividualAddress"
+            }
+          }
+        }
+      },
+      "Error": {
+        "title": "Error",
+        "type": "object",
+        "description": "General error structure is used throughout the common service APIs that comply with RFC7807.\n",
+        "properties": {
+          "type": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "A URI reference [RFC3986] that identifies the problem type",
+            "example": "https://api.finastra.com/validation-error"
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "A short human-readable summary of the problem type",
+            "example": "product not available"
+          },
+          "detail": {
+            "type": "string",
+            "maxLength": 256,
+            "description": "A human-readable explanation specific to this occurrence of the problem",
+            "example": "Product specified is not available in the specified state"
+          }
+        }
       }
     }
   }
